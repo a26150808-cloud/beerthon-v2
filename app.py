@@ -95,18 +95,26 @@ def save_settings(settings):
 
 
 def load_settings():
-    if not os.path.exists(SETTINGS_FILE):
-        settings = {
-            "password_hash": hash_text(DEFAULT_LOGIN_PASSWORD),
-            "admin_password_hash": hash_text(DEFAULT_ADMIN_PASSWORD)
-        }
-        save_settings(settings)
-        return settings
-
     settings = safe_load_json(SETTINGS_FILE, {})
 
-    if "admin_password_hash" not in settings:
+    try:
+        secret_password_hash = st.secrets.get("password_hash")
+        secret_admin_password_hash = st.secrets.get("admin_password_hash")
+    except Exception:
+        secret_password_hash = None
+        secret_admin_password_hash = None
+
+    if secret_password_hash:
+        settings["password_hash"] = secret_password_hash
+    elif "password_hash" not in settings:
+        settings["password_hash"] = hash_text(DEFAULT_LOGIN_PASSWORD)
+
+    if secret_admin_password_hash:
+        settings["admin_password_hash"] = secret_admin_password_hash
+    elif "admin_password_hash" not in settings:
         settings["admin_password_hash"] = hash_text(DEFAULT_ADMIN_PASSWORD)
+
+    if not secret_password_hash or not secret_admin_password_hash:
         save_settings(settings)
 
     return settings
