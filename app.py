@@ -1118,9 +1118,12 @@ def build_low_price_line_section(strategy_mode=None):
         return section + "目前沒有股價低於60元的候選股。\n"
 
     for item in items:
+        stop_loss_text = item.get("建議停損") or "未記錄"
+        take_profit_text = item.get("第一停利") or "未記錄"
         section += (
             f"{item['股票代號']} {item['股票名稱']}\n"
-            f"收盤價：{item['收盤價']}｜總分：{item['總分']}｜等級：{item['等級']}\n\n"
+            f"收盤價：{item['收盤價']}｜總分：{item['總分']}｜等級：{item['等級']}\n"
+            f"停損價：{stop_loss_text}｜停利價：{take_profit_text}\n\n"
         )
 
     return section
@@ -1399,7 +1402,7 @@ else:
     else:
         st.dataframe(consecutive_low_price, use_container_width=True, hide_index=True)
 
-    best = df.iloc[0]
+    best = top10.iloc[0]
 
     st.subheader("今日第一優先參考")
     st.write(f"策略：{best['策略模式']}")
