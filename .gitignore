@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+
+# Local settings / secrets
+app_settings.json
+owner_device.key
+.streamlit/secrets.toml
+
+# Logs / history
+analysis_log.json
+line_log.json
+line_test_log.json
+financial_error_log.json
+top10_history.json
+low_price_top10_history.json
+
+# Backup
+app_backup_before_upgrade.py

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>小朋友貪食蛇遊戲</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    canvas {
+      background: #222;
+      border: 5px solid #555;
+      margin-top: 10px;
+    }
+
+    .info {
+      font-size: 22px;
+      margin-top: 10px;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #4caf50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🐍 貪食蛇遊戲</h1>
+  <div class="info">分數：<span id="score">0</span></div>
+
+  <canvas id="game" width="400" height="400"></canvas>
+
+  <br />
+  <button onclick="restartGame()">重新開始</button>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const scoreText = document.getElementById("score");
+
+    const box = 20;
+    let score = 0;
+
+    let snake = [
+      { x: 200, y: 200 }
+    ];
+
+    let food = {
+      x: Math.floor(Math.random() * 20) * box,
+      y: Math.floor(Math.random() * 20) * box
+    };
+
+    let direction = "RIGHT";
+    let gameOver = false;
+
+    document.addEventListener("keydown", changeDirection);
+
+    function changeDirection(event) {
+      if (event.key === "ArrowUp" && direction !== "DOWN") {
+        direction = "UP";
+      } else if (event.key === "ArrowDown" && direction !== "UP") {
+        direction = "DOWN";
+      } else if (event.key === "ArrowLeft" && direction !== "RIGHT") {
+        direction = "LEFT";
+      } else if (event.key === "ArrowRight" && direction !== "LEFT") {
+        direction = "RIGHT";
+      }
+    }
+
+    function drawGame() {
+      if (gameOver) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 畫食物
+      ctx.fillStyle = "red";
+      ctx.fillRect(food.x, food.y, box, box);
+
+      // 畫蛇
+      ctx.fillStyle = "lime";
+      for (let i = 0; i < snake.length; i++) {
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+      }
+
+      let snakeX = snake[0].x;
+      let snakeY = snake[0].y;
+
+      if (direction === "UP") snakeY -= box;
+      if (direction === "DOWN") snakeY += box;
+      if (direction === "LEFT") snakeX -= box;
+      if (direction === "RIGHT") snakeX += box;
+
+      // 撞牆
+      if (
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= canvas.width ||
+        snakeY >= canvas.height
+      ) {
+        endGame();
+        return;
+      }
+
+      // 撞到自己
+      for (let i = 0; i < snake.length; i++) {
+        if (snakeX === snake[i].x && snakeY === snake[i].y) {
+          endGame();
+          return;
+        }
+      }
+
+      let newHead = { x: snakeX, y: snakeY };
+
+      // 吃到食物
+      if (snakeX === food.x && snakeY === food.y) {
+        score++;
+        scoreText.textContent = score;
+
+        food = {
+          x: Math.floor(Math.random() * 20) * box,
+          y: Math.floor(Math.random() * 20) * box
+        };
+      } else {
+        snake.pop();
+      }
+
+      snake.unshift(newHead);
+    }
+
+    function endGame() {
+      gameOver = true;
+      ctx.fillStyle = "white";
+      ctx.font = "36px Arial";
+      ctx.fillText("遊戲結束", 115, 190);
+
+      ctx.font = "22px Arial";
+      ctx.fillText("按重新開始再玩一次", 95, 230);
+    }
+
+    function restartGame() {
+      score = 0;
+      scoreText.textContent = score;
+
+      snake = [
+        { x: 200, y: 200 }
+      ];
+
+      food = {
+        x: Math.floor(Math.random() * 20) * box,
+        y: Math.floor(Math.random() * 20) * box
+      };
+
+      direction = "RIGHT";
+      gameOver = false;
+    }
+
+    setInterval(drawGame, 450);
+  </script>
+
+</body>
+</html>

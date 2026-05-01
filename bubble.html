@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>小小風獅爺泡泡樂</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fff3c4;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 34px;
+      margin: 15px;
+      color: #d2691e;
+    }
+
+    #score {
+      font-size: 30px;
+      color: #ff6600;
+      font-weight: bold;
+    }
+
+    #message {
+      font-size: 28px;
+      color: #444;
+      height: 40px;
+      margin: 10px;
+    }
+
+    canvas {
+      background: linear-gradient(#87ceeb, #dff8ff);
+      border: 6px solid #ffcc66;
+      border-radius: 20px;
+      touch-action: none;
+    }
+
+    button {
+      font-size: 24px;
+      padding: 12px 25px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 15px;
+      background: #ff9900;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌺 小小風獅爺泡泡樂 🌺</h1>
+  <div id="score">分數：0</div>
+  <div id="message">點點看風獅爺！</div>
+
+  <canvas id="game" width="400" height="400"></canvas>
+
+  <br>
+  <button onclick="resetGame()">重新開始</button>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const scoreText = document.getElementById("score");
+    const messageText = document.getElementById("message");
+
+    let score = 0;
+
+    let bubble = {
+      x: 200,
+      y: 200,
+      r: 70
+    };
+
+    const messages = [
+      "好棒！",
+      "你點到了！",
+      "風獅爺笑了！",
+      "太厲害了！",
+      "再來一次！",
+      "成功！"
+    ];
+
+    function drawBackground() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 海
+      ctx.fillStyle = "#4fc3f7";
+      ctx.fillRect(0, 300, 400, 100);
+
+      // 沙灘
+      ctx.fillStyle = "#ffe0a3";
+      ctx.fillRect(0, 340, 400, 60);
+
+      // 太陽
+      ctx.beginPath();
+      ctx.arc(340, 60, 35, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffd54f";
+      ctx.fill();
+
+      // 雲
+      ctx.font = "35px Arial";
+      ctx.fillText("☁️", 40, 70);
+      ctx.fillText("☁️", 95, 55);
+
+      // 沖繩感小裝飾
+      ctx.font = "30px Arial";
+      ctx.fillText("🌺", 25, 360);
+      ctx.fillText("🌴", 330, 360);
+      ctx.fillText("🌈", 280, 120);
+    }
+
+    function drawShisa(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      // 頭
+      ctx.beginPath();
+      ctx.arc(0, 0, 45, 0, Math.PI * 2);
+      ctx.fillStyle = "#d9822b";
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "#9b5a1f";
+      ctx.stroke();
+
+      // 鬃毛小圓
+      ctx.fillStyle = "#b86522";
+      const hairPoints = [
+        [-35, -35], [-15, -45], [15, -45], [35, -35],
+        [-45, -10], [45, -10], [-40, 25], [40, 25]
+      ];
+
+      hairPoints.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], 13, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 耳朵
+      ctx.fillStyle = "#d9822b";
+      ctx.beginPath();
+      ctx.moveTo(-35, -35);
+      ctx.lineTo(-65, -55);
+      ctx.lineTo(-55, -20);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(35, -35);
+      ctx.lineTo(65, -55);
+      ctx.lineTo(55, -20);
+      ctx.closePath();
+      ctx.fill();
+
+      // 眼睛
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      ctx.arc(-18, -10, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(18, -10, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(-18, -8, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(18, -8, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 鼻子
+      ctx.fillStyle = "#8b4513";
+      ctx.beginPath();
+      ctx.arc(0, 8, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 嘴巴
+      ctx.beginPath();
+      ctx.arc(0, 20, 20, 0, Math.PI);
+      ctx.fillStyle = "#7a1f1f";
+      ctx.fill();
+
+      // 牙齒
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      ctx.moveTo(-10, 22);
+      ctx.lineTo(-3, 35);
+      ctx.lineTo(4, 22);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(10, 22);
+      ctx.lineTo(17, 35);
+      ctx.lineTo(24, 22);
+      ctx.closePath();
+      ctx.fill();
+
+      // 眉毛
+      ctx.strokeStyle = "#5c2e0e";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(-30, -25);
+      ctx.lineTo(-8, -18);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(30, -25);
+      ctx.lineTo(8, -18);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawBubble() {
+      drawBackground();
+
+      // 泡泡外框
+      ctx.beginPath();
+      ctx.arc(bubble.x, bubble.y, bubble.r, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
+      ctx.fill();
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.stroke();
+
+      // 泡泡亮光
+      ctx.beginPath();
+      ctx.arc(bubble.x - 25, bubble.y - 25, 12, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      ctx.fill();
+
+      // 中間風獅爺
+      drawShisa(bubble.x, bubble.y);
+    }
+
+    function moveBubble() {
+      bubble.x = Math.random() * (canvas.width - 160) + 80;
+      bubble.y = Math.random() * (canvas.height - 160) + 80;
+    }
+
+    function handleClick(event) {
+      const rect = canvas.getBoundingClientRect();
+
+      const clickX = event.clientX - rect.left;
+      const clickY = event.clientY - rect.top;
+
+      const dx = clickX - bubble.x;
+      const dy = clickY - bubble.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // 判定範圍放大，讓小朋友更容易成功
+      if (distance < bubble.r + 35) {
+        score++;
+        scoreText.textContent = "分數：" + score;
+
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        messageText.textContent = randomMessage;
+
+        moveBubble();
+        drawBubble();
+      } else {
+        messageText.textContent = "沒關係，再點一次！";
+      }
+    }
+
+    function resetGame() {
+      score = 0;
+      scoreText.textContent = "分數：0";
+      messageText.textContent = "點點看風獅爺！";
+      bubble.x = 200;
+      bubble.y = 200;
+      drawBubble();
+    }
+
+    canvas.addEventListener("click", handleClick);
+
+    canvas.addEventListener("touchstart", function(event) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      handleClick(touch);
+    });
+
+    drawBubble();
+  </script>
+
+</body>
+</html>
