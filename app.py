@@ -1351,6 +1351,34 @@ def summarize_trade_tracking(records):
     }
 
 
+def filter_trade_records_by_period(records, period_label):
+    if period_label == "全部":
+        return records
+
+    days_map = {
+        "最近30天": 30,
+        "最近60天": 60,
+        "最近90天": 90,
+    }
+    days = days_map.get(period_label)
+    if days is None:
+        return records
+
+    end_date = pd.Timestamp(now_taipei().date())
+    start_date = end_date - pd.Timedelta(days=days - 1)
+    filtered = []
+
+    for record in records:
+        analysis_date = pd.to_datetime(record.get("analysis_date"), errors="coerce")
+        if pd.isna(analysis_date):
+            continue
+        analysis_date = analysis_date.normalize()
+        if start_date <= analysis_date <= end_date:
+            filtered.append(record)
+
+    return filtered
+
+
 def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
     history = load_top10_history(path)
     records = [
@@ -1733,15 +1761,21 @@ else:
             options=["全部"] + STRATEGY_MODES,
             key="trade_tracking_strategy_filter"
         )
+        tracking_period = st.selectbox(
+            "統計區間",
+            options=["全部", "最近30天", "最近60天", "最近90天"],
+            key="trade_tracking_period_filter"
+        )
 
         if tracking_filter == "全部":
-            filtered_tracking_records = tracking_records
+            strategy_tracking_records = tracking_records
         else:
-            filtered_tracking_records = [
+            strategy_tracking_records = [
                 r for r in tracking_records
                 if r.get("strategy_mode") == tracking_filter
             ]
 
+        filtered_tracking_records = filter_trade_records_by_period(strategy_tracking_records, tracking_period)
         tracking_summary = summarize_trade_tracking(filtered_tracking_records)
         st.dataframe(pd.DataFrame([tracking_summary]), use_container_width=True, hide_index=True)
 
