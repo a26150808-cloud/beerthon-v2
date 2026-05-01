@@ -222,12 +222,12 @@ def record_visitor():
         }
         visitors.append(visitor)
 
-    if not st.session_state.get("visitor_counted_this_session", False):
+    if not st.session_state.get("visitor_recorded", False):
         visitor["visit_count"] = int(visitor.get("visit_count", 0) or 0) + 1
         daily_counts = visitor.get("daily_counts", {})
         daily_counts[today] = int(daily_counts.get(today, 0) or 0) + 1
         visitor["daily_counts"] = daily_counts
-        st.session_state.visitor_counted_this_session = True
+        st.session_state["visitor_recorded"] = True
 
     visitor["last_seen"] = now_text
     visitor["estimated"] = bool(visitor.get("estimated", False) or estimated)
@@ -745,6 +745,8 @@ def analyze_stock(symbol, info, strategy_mode, df=None, financial_data=None):
     ma20 = float(latest["MA20"])
 
     stop_loss = max(close * 0.93, ma20 * 0.98, recent_low * 0.98)
+    if stop_loss >= close:
+        stop_loss = close * 0.93
     tp1 = close * 1.10
     tp2 = close * 1.20
 
