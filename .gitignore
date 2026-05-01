@@ -14,6 +14,8 @@ line_test_log.json
 financial_error_log.json
 top10_history.json
 low_price_top10_history.json
+trade_tracking.json
+visitor_stats.json
 
 # Backup
 app_backup_before_upgrade.py

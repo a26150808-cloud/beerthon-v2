@@ -50,6 +50,8 @@ ANALYSIS_LOG_FILE = "analysis_log.json"
 FINANCIAL_ERROR_LOG_FILE = "financial_error_log.json"
 TOP10_HISTORY_FILE = "top10_history.json"
 LOW_PRICE_TOP10_HISTORY_FILE = "low_price_top10_history.json"
+TRADE_TRACKING_FILE = "trade_tracking.json"
+VISITOR_STATS_FILE = "visitor_stats.json"
 TAIPEI_TZ = ZoneInfo("Asia/Taipei")
 STRATEGY_MODES = ["短線（強勢突破）", "中線（趨勢穩定）"]
 LEVEL_RANK = {"S級": 0, "A級": 1, "B級": 2, "C級": 3, "D級": 4}
@@ -158,6 +160,106 @@ def load_top10_history(path):
 def save_top10_history(path, data):
     safe_save_json(path, data)
 
+
+def load_trade_tracking():
+    return safe_load_json(TRADE_TRACKING_FILE, {"records": []})
+
+
+def save_trade_tracking(data):
+    safe_save_json(TRADE_TRACKING_FILE, data)
+
+
+def load_visitor_stats():
+    return safe_load_json(VISITOR_STATS_FILE, {"visitors": []})
+
+
+def save_visitor_stats(data):
+    safe_save_json(VISITOR_STATS_FILE, data)
+
+
+def get_visitor_identity():
+    headers = {}
+
+    try:
+        headers = dict(st.context.headers)
+    except Exception:
+        headers = {}
+
+    ip = (
+        headers.get("x-forwarded-for", "").split(",")[0].strip()
+        or headers.get("x-real-ip", "").strip()
+        or headers.get("remote-addr", "").strip()
+    )
+    user_agent = headers.get("user-agent", "").strip()
+    estimated = not (ip and user_agent)
+
+    if "visitor_session_seed" not in st.session_state:
+        st.session_state.visitor_session_seed = str(uuid.uuid4())
+
+    identity_source = f"{ip}|{user_agent}" if not estimated else f"{st.session_state.visitor_session_seed}|{user_agent or 'unknown'}"
+    visitor_id = hash_text(identity_source)
+
+    return visitor_id, estimated
+
+
+def record_visitor():
+    stats = load_visitor_stats()
+    visitors = stats.get("visitors", [])
+    visitor_id, estimated = get_visitor_identity()
+    now_text = format_taipei_dt()
+    today = today_taipei()
+
+    visitor = next((v for v in visitors if v.get("visitor_id") == visitor_id), None)
+
+    if visitor is None:
+        visitor = {
+            "visitor_id": visitor_id,
+            "first_seen": now_text,
+            "last_seen": now_text,
+            "visit_count": 0,
+            "daily_counts": {},
+            "estimated": estimated,
+        }
+        visitors.append(visitor)
+
+    if not st.session_state.get("visitor_counted_this_session", False):
+        visitor["visit_count"] = int(visitor.get("visit_count", 0) or 0) + 1
+        daily_counts = visitor.get("daily_counts", {})
+        daily_counts[today] = int(daily_counts.get(today, 0) or 0) + 1
+        visitor["daily_counts"] = daily_counts
+        st.session_state.visitor_counted_this_session = True
+
+    visitor["last_seen"] = now_text
+    visitor["estimated"] = bool(visitor.get("estimated", False) or estimated)
+
+    stats["visitors"] = visitors
+    stats["last_updated"] = now_text
+    save_visitor_stats(stats)
+
+    return stats
+
+
+def summarize_visitor_stats(stats):
+    visitors = stats.get("visitors", [])
+    today = today_taipei()
+    today_visitors = [
+        v for v in visitors
+        if int(v.get("daily_counts", {}).get(today, 0) or 0) > 0
+    ]
+    today_total_opens = sum(
+        int(v.get("daily_counts", {}).get(today, 0) or 0)
+        for v in visitors
+    )
+
+    return {
+        "total_unique": len(visitors),
+        "today_unique": len(today_visitors),
+        "today_total_opens": today_total_opens,
+        "estimated": any(v.get("estimated", False) for v in visitors),
+    }
+
+
+visitor_stats = record_visitor()
 settings = load_settings()
 
 def require_login():
@@ -1048,6 +1150,205 @@ def record_top10_history(path, analysis_time, strategy_mode, top_df):
     save_top10_history(path, history)
 
 
+def record_trade_candidates(analysis_time, strategy_mode, candidates_df, source):
+    if candidates_df.empty:
+        return
+
+    tracking = load_trade_tracking()
+    records = tracking.get("records", [])
+    existing_keys = {
+        (
+            r.get("analysis_date"),
+            r.get("strategy_mode"),
+            str(r.get("股票代號")),
+            r.get("source"),
+        )
+        for r in records
+    }
+    analysis_date = analysis_time[:10]
+
+    for _, row in candidates_df.iterrows():
+        key = (analysis_date, strategy_mode, str(row["股票代號"]), source)
+        if key in existing_keys:
+            continue
+
+        entry_price = float(row["收盤價"])
+        max_tracking_days = 20 if "短線" in strategy_mode else 60
+        stop_loss = float(row["建議停損"])
+        take_profit = float(row["第一停利"])
+        records.append({
+            "analysis_date": analysis_date,
+            "analysis_time": analysis_time,
+            "strategy_mode": strategy_mode,
+            "source": source,
+            "股票代號": str(row["股票代號"]),
+            "股票名稱": row["股票名稱"],
+            "等級": row["等級"],
+            "總分": round(float(row["總分"]), 2),
+            "entry_price": entry_price,
+            "stop_loss": stop_loss,
+            "take_profit": take_profit,
+            "建議停損": stop_loss,
+            "第一停利": take_profit,
+            "status": "holding",
+            "latest_price": entry_price,
+            "return_pct": 0.0,
+            "exit_date": None,
+            "exit_reason": None,
+            "max_tracking_days": max_tracking_days,
+            "tracking_days": 0,
+        })
+        existing_keys.add(key)
+
+    tracking["records"] = records
+    save_trade_tracking(tracking)
+
+
+def update_trade_tracking_records():
+    tracking = load_trade_tracking()
+    records = tracking.get("records", [])
+    changed = False
+
+    for record in records:
+        strategy_mode = str(record.get("strategy_mode", ""))
+        max_tracking_days = int(record.get("max_tracking_days") or (20 if "短線" in strategy_mode else 60))
+        record["max_tracking_days"] = max_tracking_days
+        record.setdefault("exit_date", None)
+        record.setdefault("exit_reason", None)
+        record.setdefault("tracking_days", 0)
+        record.setdefault("source", record.get("來源", "原本TOP10"))
+
+        if record.get("status", "holding") != "holding":
+            changed = True
+            continue
+
+        code = str(record.get("股票代號", "")).strip()
+        if not code:
+            continue
+
+        symbol = f"{code}.TWO" if record.get("市場") == "上櫃" else f"{code}.TW"
+
+        try:
+            price_df = download_price_data(symbol)
+            if price_df is None:
+                alternate_symbol = f"{code}.TWO" if symbol.endswith(".TW") else f"{code}.TW"
+                price_df = download_price_data(alternate_symbol)
+            if price_df is None or price_df.empty:
+                continue
+
+            analysis_date = pd.to_datetime(record.get("analysis_date"), errors="coerce")
+            if pd.isna(analysis_date):
+                continue
+
+            price_df = price_df.copy()
+            price_df.index = pd.to_datetime(price_df.index).tz_localize(None).normalize()
+            post_df = price_df[price_df.index > analysis_date.normalize()]
+
+            if post_df.empty:
+                changed = True
+                continue
+
+            entry_price = float(record.get("entry_price", 0) or 0)
+            stop_loss = float(record.get("stop_loss", record.get("建議停損", 0)) or 0)
+            take_profit = float(record.get("take_profit", record.get("第一停利", 0)) or 0)
+            record["stop_loss"] = stop_loss
+            record["take_profit"] = take_profit
+
+            tracking_df = post_df.head(max_tracking_days)
+            latest = tracking_df.iloc[-1]
+            latest_close = float(latest["Close"])
+            record["latest_price"] = round(latest_close, 2)
+            record["tracking_days"] = len(tracking_df)
+
+            if entry_price <= 0:
+                record["return_pct"] = 0.0
+                changed = True
+                continue
+
+            closed = False
+            for trade_date, day in tracking_df.iterrows():
+                high_hit = take_profit > 0 and float(day["High"]) >= take_profit
+                low_hit = stop_loss > 0 and float(day["Low"]) <= stop_loss
+
+                if high_hit and low_hit:
+                    record["status"] = "loss"
+                    record["exit_price"] = round(stop_loss, 2)
+                    record["exit_date"] = trade_date.strftime("%Y-%m-%d")
+                    record["exit_reason"] = "同日停利與停損皆觸發，保守判定停損"
+                    record["return_pct"] = round((stop_loss - entry_price) / entry_price * 100, 2)
+                    closed = True
+                    break
+
+                if low_hit:
+                    record["status"] = "loss"
+                    record["exit_price"] = round(stop_loss, 2)
+                    record["exit_date"] = trade_date.strftime("%Y-%m-%d")
+                    record["exit_reason"] = "觸發停損"
+                    record["return_pct"] = round((stop_loss - entry_price) / entry_price * 100, 2)
+                    closed = True
+                    break
+
+                if high_hit:
+                    record["status"] = "win"
+                    record["exit_price"] = round(take_profit, 2)
+                    record["exit_date"] = trade_date.strftime("%Y-%m-%d")
+                    record["exit_reason"] = "觸發第一停利"
+                    record["return_pct"] = round((take_profit - entry_price) / entry_price * 100, 2)
+                    closed = True
+                    break
+
+            if not closed:
+                record["return_pct"] = round((latest_close - entry_price) / entry_price * 100, 2)
+                if len(post_df) >= max_tracking_days:
+                    record["status"] = "expired"
+                    record["exit_price"] = round(latest_close, 2)
+                    record["exit_date"] = tracking_df.index[-1].strftime("%Y-%m-%d")
+                    record["exit_reason"] = f"超過{max_tracking_days}個交易日未觸發停利/停損"
+
+            changed = True
+        except Exception as exc:
+            append_financial_error(code, "trade_tracking", "價格更新失敗", exc)
+            continue
+
+    if changed:
+        tracking["records"] = records
+        tracking["last_updated"] = format_taipei_dt()
+        save_trade_tracking(tracking)
+
+    return tracking
+
+
+def summarize_trade_tracking(records):
+    total = len(records)
+    closed = [r for r in records if r.get("status") in ("win", "loss")]
+    wins = [r for r in closed if r.get("status") == "win"]
+    losses = [r for r in closed if r.get("status") == "loss"]
+    holdings = [r for r in records if r.get("status", "holding") == "holding"]
+    expired = [r for r in records if r.get("status") == "expired"]
+    returns = [float(r.get("return_pct", 0) or 0) for r in closed]
+
+    def win_rate_for(filtered):
+        closed_filtered = [r for r in filtered if r.get("status") in ("win", "loss")]
+        if not closed_filtered:
+            return 0.0
+        wins_filtered = [r for r in closed_filtered if r.get("status") == "win"]
+        return round(len(wins_filtered) / len(closed_filtered) * 100, 2)
+
+    return {
+        "總追蹤筆數": total,
+        "已停利win": len(wins),
+        "已停損loss": len(losses),
+        "追蹤中holding": len(holdings),
+        "逾期expired": len(expired),
+        "勝率%": round(len(wins) / len(closed) * 100, 2) if closed else 0.0,
+        "平均已結案報酬%": round(sum(returns) / len(returns), 2) if returns else 0.0,
+        "S級勝率%": win_rate_for([r for r in records if r.get("等級") == "S級"]),
+        "A級勝率%": win_rate_for([r for r in records if r.get("等級") == "A級"]),
+        "短線勝率%": win_rate_for([r for r in records if "短線" in str(r.get("strategy_mode", ""))]),
+        "中線勝率%": win_rate_for([r for r in records if "中線" in str(r.get("strategy_mode", ""))]),
+    }
+
+
 def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
     history = load_top10_history(path)
     records = [
@@ -1307,6 +1608,18 @@ with st.sidebar:
         st.session_state.admin_ok = False
         st.rerun()
 
+    st.sidebar.markdown("---")
+    visitor_summary = summarize_visitor_stats(visitor_stats)
+    st.sidebar.caption("📊 訪客統計（參考）")
+    st.sidebar.caption(f"累計不重複訪客數：{visitor_summary['total_unique']}")
+    st.sidebar.caption(f"今日不重複訪客數：{visitor_summary['today_unique']}")
+    st.sidebar.caption(f"今日總開啟次數：{visitor_summary['today_total_opens']}")
+    if visitor_summary["estimated"]:
+        st.sidebar.markdown(
+            "<span style='color: gray; font-size: 0.8rem;'>※ 訪客統計為估算值</span>",
+            unsafe_allow_html=True
+        )
+
 
 st.subheader("🔥 今日 Top 10 推薦")
 
@@ -1348,18 +1661,25 @@ with st.spinner("正在讀取今日分析結果，第一次會比較久，之後
 
     for mode, mode_df in dfs_by_strategy.items():
         if not mode_df.empty:
+            mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
+            mode_low_price_top10 = get_low_price_top10(mode_df)
+
             record_top10_history(
                 TOP10_HISTORY_FILE,
                 analysis_time,
                 mode,
-                sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
+                mode_top10
             )
             record_top10_history(
                 LOW_PRICE_TOP10_HISTORY_FILE,
                 analysis_time,
                 mode,
-                get_low_price_top10(mode_df)
+                mode_low_price_top10
             )
+            record_trade_candidates(analysis_time, mode, mode_top10, "原本TOP10")
+            record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
+
+    trade_tracking = update_trade_tracking_records()
 
     line_status_text = maybe_send_scheduled_line()
 
@@ -1401,6 +1721,44 @@ else:
         st.info("目前無連續 3 天以上進入低價股 TOP10 的股票")
     else:
         st.dataframe(consecutive_low_price, use_container_width=True, hide_index=True)
+
+    with st.expander("📊 選股追蹤與勝率統計"):
+        st.info("每次 TOP10 會持續追蹤，短線最多 20 個交易日，中線最多 60 個交易日；勝率只計算已停利與已停損紀錄。若舊資料曾用舊規則結案，可刪除 trade_tracking.json 後重新開始追蹤。")
+        tracking_records = trade_tracking.get("records", [])
+        tracking_filter = st.selectbox(
+            "追蹤紀錄策略篩選",
+            options=["全部"] + STRATEGY_MODES,
+            key="trade_tracking_strategy_filter"
+        )
+
+        if tracking_filter == "全部":
+            filtered_tracking_records = tracking_records
+        else:
+            filtered_tracking_records = [
+                r for r in tracking_records
+                if r.get("strategy_mode") == tracking_filter
+            ]
+
+        tracking_summary = summarize_trade_tracking(filtered_tracking_records)
+        st.dataframe(pd.DataFrame([tracking_summary]), use_container_width=True, hide_index=True)
+
+        if filtered_tracking_records:
+            recent_records = sorted(
+                filtered_tracking_records,
+                key=lambda r: r.get("analysis_time", ""),
+                reverse=True
+            )[:20]
+            recent_df = pd.DataFrame(recent_records)
+            recent_columns = [
+                "analysis_date", "strategy_mode", "source", "股票代號", "股票名稱",
+                "等級", "總分", "entry_price", "stop_loss", "take_profit",
+                "status", "exit_reason", "tracking_days", "return_pct",
+                "latest_price", "exit_date", "max_tracking_days"
+            ]
+            existing_recent_columns = [c for c in recent_columns if c in recent_df.columns]
+            st.dataframe(recent_df[existing_recent_columns], use_container_width=True, hide_index=True)
+        else:
+            st.info("目前沒有選股追蹤紀錄。")
 
     best = top10.iloc[0]
 
