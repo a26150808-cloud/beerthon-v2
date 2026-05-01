@@ -1627,28 +1627,29 @@ analysis_log = load_analysis_log()
 last_analysis_time = analysis_log.get("last_analysis_time", "尚未分析")
 st.caption(f"📅 上次分析完成時間：{last_analysis_time}")
 
-if st.button("📱 測試LINE通知"):
-    line_message, line_reason = build_line_message_from_history()
-    test_message = "🔥 LINE測試成功，你的選股系統已連動\n\n"
-    if line_message:
-        test_message += line_message
-    else:
-        test_message += f"正式通知內容目前無法產生：{line_reason}\n"
-        test_message += build_low_price_line_section()
+if st.session_state.get("admin_ok") == True:
+    if st.button("📱 測試LINE通知"):
+        line_message, line_reason = build_line_message_from_history()
+        test_message = "🔥 LINE測試成功，你的選股系統已連動\n\n"
+        if line_message:
+            test_message += line_message
+        else:
+            test_message += f"正式通知內容目前無法產生：{line_reason}\n"
+            test_message += build_low_price_line_section()
 
-    status = send_line_message(test_message)
-    test_log = load_line_test_log()
-    test_log.setdefault("tests", []).append({
-        "time": format_taipei_dt(),
-        "status": status
-    })
-    test_log["tests"] = test_log["tests"][-100:]
-    save_line_test_log(test_log)
+        status = send_line_message(test_message)
+        test_log = load_line_test_log()
+        test_log.setdefault("tests", []).append({
+            "time": format_taipei_dt(),
+            "status": status
+        })
+        test_log["tests"] = test_log["tests"][-100:]
+        save_line_test_log(test_log)
 
-    if status == 200:
-        st.success("LINE測試發送成功，不會影響正式發送狀態")
-    else:
-        st.error(f"測試發送失敗：{status}")
+        if status == 200:
+            st.success("LINE測試發送成功，不會影響正式發送狀態")
+        else:
+            st.error(f"測試發送失敗：{status}")
 
 with st.spinner("正在讀取今日分析結果，第一次會比較久，之後會使用快取加速。"):
 
