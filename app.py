@@ -1490,11 +1490,43 @@ def build_line_message_from_history():
     return msg, None
 
 
+def send_official_line_after_manual_refresh():
+    now = now_taipei()
+    today = now.strftime("%Y-%m-%d")
+    log = load_line_log()
+
+    if not (time(16, 0) <= now.time() <= time(18, 0)):
+        return "正式 LINE 未發送：只允許在 16:00～18:00 手動刷新後發送。"
+
+    if log.get("last_official_sent_date") == today:
+        return "今日正式 LINE 已發送過，不會重複發送。"
+
+    msg, reason = build_line_message_from_history()
+    if reason:
+        log["last_skip_date"] = today
+        log["last_skip_reason"] = reason
+        log["last_checked_at"] = format_taipei_dt(now)
+        save_line_log(log)
+        return f"正式 LINE 未發送：{reason}"
+
+    status = send_line_message(msg)
+    log["last_checked_at"] = format_taipei_dt(now)
+    log["last_official_status"] = status
+
+    if status == 200:
+        log["last_official_sent_date"] = today
+        log["last_official_sent_at"] = format_taipei_dt(now)
+        save_line_log(log)
+        return "正式 LINE 已於手動刷新後送出。"
+
+    log["last_failed_date"] = today
+    log["last_failed_status"] = status
+    save_line_log(log)
+    return f"正式 LINE 發送失敗：{status}"
+
+
 def maybe_send_scheduled_line():
-    # Auto LINE dispatch is intentionally disabled so Streamlit reruns do not
-    # reset scheduling state or send duplicate broadcasts. Manual LINE actions
-    # still use build_line_message_from_history() and send_line_message().
-    return "LINE 自動更新已停用，請使用手動更新或測試發送。"
+    return "正式 LINE 只會在 16:00～18:00 手動刷新後發送一次；本頁不會因重新整理而自動發送。"
 
 
 # =========================
@@ -1524,9 +1556,10 @@ with st.sidebar:
 
     if st.button("🔄 手動刷新今日資料"):
         st.cache_data.clear()
+        st.session_state["send_official_line_after_refresh"] = True
         st.success("快取已清除，請重新整理頁面。")
 
-    st.info("系統會自動快取 24 小時。建議每日 16:00～17:00 後使用。")
+    st.info("系統會自動快取 24 小時。建議每日 16:00～18:00 手動更新。")
 
     st.divider()
 
@@ -1681,7 +1714,10 @@ with st.spinner("正在讀取今日分析結果，第一次會比較久，之後
 
     trade_tracking = update_trade_tracking_records()
 
-    line_status_text = maybe_send_scheduled_line()
+    if st.session_state.pop("send_official_line_after_refresh", False):
+        line_status_text = send_official_line_after_manual_refresh()
+    else:
+        line_status_text = maybe_send_scheduled_line()
 
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
 st.caption(f"目前顯示策略：{display_strategy}。短線/中線已於同一次分析完成，切換顯示不會重新抓資料。")
