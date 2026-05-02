@@ -40,6 +40,7 @@ st.set_page_config(page_title="台股選股系統", layout="wide")
 # 登入設定
 # =========================
 
+# 正式部署時建議全部改用 st.secrets，不建議依賴預設密碼。
 DEFAULT_LOGIN_PASSWORD = "123456"
 DEFAULT_ADMIN_PASSWORD = "admin888888"
 
@@ -115,9 +116,6 @@ def load_settings():
         settings["admin_password_hash"] = secret_admin_password_hash
     elif "admin_password_hash" not in settings:
         settings["admin_password_hash"] = hash_text(DEFAULT_ADMIN_PASSWORD)
-
-    if not secret_password_hash or not secret_admin_password_hash:
-        save_settings(settings)
 
     return settings
 
@@ -1493,39 +1491,10 @@ def build_line_message_from_history():
 
 
 def maybe_send_scheduled_line():
-    now = now_taipei()
-    today = now.strftime("%Y-%m-%d")
-    log = load_line_log()
-
-    if now.weekday() >= 5:
-        return "週末不發送正式 LINE 通知"
-    if now.time() < time(8, 0):
-        return "尚未到正式 LINE 發送時間 08:00"
-    if log.get("last_official_sent_date") == today:
-        return "今日正式 LINE 通知已發送過，不會重複發送。"
-
-    msg, reason = build_line_message_from_history()
-    if reason:
-        log["last_skip_date"] = today
-        log["last_skip_reason"] = reason
-        log["last_checked_at"] = format_taipei_dt(now)
-        save_line_log(log)
-        return f"正式 LINE 未發送：{reason}"
-
-    status = send_line_message(msg)
-    log["last_checked_at"] = format_taipei_dt(now)
-    log["last_official_status"] = status
-
-    if status == 200:
-        log["last_official_sent_date"] = today
-        log["last_official_sent_at"] = format_taipei_dt(now)
-        save_line_log(log)
-        return "正式 LINE 通知已送出"
-
-    log["last_failed_date"] = today
-    log["last_failed_status"] = status
-    save_line_log(log)
-    return f"正式 LINE 通知失敗：{status}"
+    # Auto LINE dispatch is intentionally disabled so Streamlit reruns do not
+    # reset scheduling state or send duplicate broadcasts. Manual LINE actions
+    # still use build_line_message_from_history() and send_line_message().
+    return "LINE 自動更新已停用，請使用手動更新或測試發送。"
 
 
 # =========================
