@@ -48,6 +48,7 @@ SETTINGS_FILE = "app_settings.json"
 LINE_LOG_FILE = "line_log.json"
 LINE_TEST_LOG_FILE = "line_test_log.json"
 ANALYSIS_LOG_FILE = "analysis_log.json"
+ANALYSIS_RESULT_FILE = "analysis_result.json"
 FINANCIAL_ERROR_LOG_FILE = "financial_error_log.json"
 TOP10_HISTORY_FILE = "top10_history.json"
 LOW_PRICE_TOP10_HISTORY_FILE = "low_price_top10_history.json"
@@ -141,6 +142,14 @@ def load_analysis_log():
 
 def save_analysis_log(data):
     safe_save_json(ANALYSIS_LOG_FILE, data)
+
+
+def load_analysis_result():
+    return safe_load_json(ANALYSIS_RESULT_FILE, {})
+
+
+def save_analysis_result(data):
+    safe_save_json(ANALYSIS_RESULT_FILE, data)
 
 
 def load_financial_error_log():
@@ -1122,6 +1131,49 @@ def sort_history_items_by_level_then_score(items):
     )
 
 
+def dataframe_to_records(df):
+    if df.empty:
+        return []
+    return json.loads(df.to_json(orient="records", force_ascii=False))
+
+
+def records_to_dataframe(records):
+    if not records:
+        return pd.DataFrame()
+    return pd.DataFrame(records)
+
+
+def build_analysis_result_payload(dfs_by_strategy, liquidity_count, selected_count, analysis_time, scan_limit):
+    return {
+        "analysis_time": analysis_time,
+        "saved_at": format_taipei_dt(),
+        "scan_limit": int(scan_limit),
+        "liquidity_count": int(liquidity_count),
+        "selected_count": int(selected_count),
+        "strategies": {
+            mode: dataframe_to_records(dfs_by_strategy.get(mode, pd.DataFrame()))
+            for mode in STRATEGY_MODES
+        },
+    }
+
+
+def parse_analysis_result_payload(payload):
+    if not isinstance(payload, dict):
+        payload = {}
+
+    strategies = payload.get("strategies", {})
+    dfs_by_strategy = {
+        mode: records_to_dataframe(strategies.get(mode, []))
+        for mode in STRATEGY_MODES
+    }
+    return (
+        dfs_by_strategy,
+        int(payload.get("liquidity_count", 0) or 0),
+        int(payload.get("selected_count", 0) or 0),
+        payload.get("analysis_time", "尚未分析"),
+    )
+
+
 def get_low_price_top10(df):
     if df.empty:
         return pd.DataFrame()
@@ -1554,6 +1606,49 @@ def maybe_send_scheduled_line():
     return "正式 LINE 只會在 16:00～18:00 手動刷新後發送一次；本頁不會因重新整理而自動發送。"
 
 
+def perform_manual_refresh(scan_limit):
+    st.cache_data.clear()
+    dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
+
+    payload = build_analysis_result_payload(
+        dfs_by_strategy,
+        liquidity_count,
+        selected_count,
+        analysis_time,
+        scan_limit,
+    )
+    save_analysis_result(payload)
+
+    analysis_log = load_analysis_log()
+    analysis_log["last_analysis_time"] = analysis_time
+    save_analysis_log(analysis_log)
+
+    for mode, mode_df in dfs_by_strategy.items():
+        if not mode_df.empty:
+            mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
+            mode_low_price_top10 = get_low_price_top10(mode_df)
+
+            record_top10_history(
+                TOP10_HISTORY_FILE,
+                analysis_time,
+                mode,
+                mode_top10
+            )
+            record_top10_history(
+                LOW_PRICE_TOP10_HISTORY_FILE,
+                analysis_time,
+                mode,
+                mode_low_price_top10
+            )
+            record_trade_candidates(analysis_time, mode, mode_top10, "原本TOP10")
+            record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
+
+    trade_tracking = update_trade_tracking_records()
+    line_status_text = send_official_line_after_manual_refresh()
+
+    return payload, trade_tracking, line_status_text
+
+
 # =========================
 # UI
 # =========================
@@ -1581,13 +1676,14 @@ with st.sidebar:
 
     if st.session_state.get("admin_ok") == True:
         if st.button("🔄 手動刷新今日資料"):
-            st.cache_data.clear()
-            st.session_state["send_official_line_after_refresh"] = True
-            st.success("快取已清除，請重新整理頁面。")
+            with st.spinner("正在手動刷新今日資料，請勿關閉頁面。"):
+                _, _, refresh_line_status = perform_manual_refresh(scan_limit)
+            st.session_state["manual_refresh_line_status"] = refresh_line_status
+            st.success("今日資料已手動刷新並儲存。")
     else:
         st.info("資料由管理員於每日 16:00～18:00 手動更新。")
 
-    st.info("系統會自動快取 24 小時。建議每日 16:00～18:00 手動更新。")
+    st.info("一般使用者只會讀取已儲存的分析結果；建議管理員每日 16:00～18:00 手動更新。")
 
     st.divider()
 
@@ -1683,9 +1779,12 @@ with st.sidebar:
 
 st.subheader("🔥 今日 Top 10 推薦")
 
-analysis_log = load_analysis_log()
-last_analysis_time = analysis_log.get("last_analysis_time", "尚未分析")
-st.caption(f"📅 上次分析完成時間：{last_analysis_time}")
+analysis_result = load_analysis_result()
+dfs_by_strategy, liquidity_count, selected_count, analysis_time = parse_analysis_result_payload(analysis_result)
+trade_tracking = load_trade_tracking()
+line_status_text = st.session_state.pop("manual_refresh_line_status", maybe_send_scheduled_line())
+
+st.caption(f"📅 上次分析完成時間：{analysis_time}")
 
 if st.session_state.get("admin_ok") == True:
     if st.button("📱 測試LINE通知"):
@@ -1711,48 +1810,8 @@ if st.session_state.get("admin_ok") == True:
         else:
             st.error(f"測試發送失敗：{status}")
 
-with st.spinner("正在讀取今日分析結果，第一次會比較久，之後會使用快取加速。"):
-
-    dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
-
-    analysis_log = load_analysis_log()
-    if analysis_log.get("last_analysis_time") != analysis_time:
-        analysis_log["last_analysis_time"] = analysis_time
-        save_analysis_log(analysis_log)
-
-    for mode, mode_df in dfs_by_strategy.items():
-        if not mode_df.empty:
-            mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
-            mode_low_price_top10 = get_low_price_top10(mode_df)
-
-            record_top10_history(
-                TOP10_HISTORY_FILE,
-                analysis_time,
-                mode,
-                mode_top10
-            )
-            record_top10_history(
-                LOW_PRICE_TOP10_HISTORY_FILE,
-                analysis_time,
-                mode,
-                mode_low_price_top10
-            )
-            record_trade_candidates(analysis_time, mode, mode_top10, "原本TOP10")
-            record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
-
-    trade_tracking = update_trade_tracking_records()
-
-    if (
-        st.session_state.get("admin_ok") == True
-        and st.session_state.pop("send_official_line_after_refresh", False)
-    ):
-        line_status_text = send_official_line_after_manual_refresh()
-    else:
-        st.session_state.pop("send_official_line_after_refresh", None)
-        line_status_text = maybe_send_scheduled_line()
-
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
-st.caption(f"目前顯示策略：{display_strategy}。短線/中線已於同一次分析完成，切換顯示不會重新抓資料。")
+st.caption(f"目前顯示策略：{display_strategy}。一般瀏覽只讀取已儲存結果，不會重新抓資料。")
 st.info(line_status_text)
 
 
