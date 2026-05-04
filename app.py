@@ -4,6 +4,7 @@ import pandas as pd
 import twstock
 import hashlib
 import requests
+import base64
 
 def send_line_message(message):
     token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
@@ -54,6 +55,14 @@ TOP10_HISTORY_FILE = "top10_history.json"
 LOW_PRICE_TOP10_HISTORY_FILE = "low_price_top10_history.json"
 TRADE_TRACKING_FILE = "trade_tracking.json"
 VISITOR_STATS_FILE = "visitor_stats.json"
+GITHUB_PERSIST_FILES = [
+    TRADE_TRACKING_FILE,
+    ANALYSIS_RESULT_FILE,
+    ANALYSIS_LOG_FILE,
+    TOP10_HISTORY_FILE,
+    LOW_PRICE_TOP10_HISTORY_FILE,
+    LINE_LOG_FILE,
+]
 TAIPEI_TZ = ZoneInfo("Asia/Taipei")
 STRATEGY_MODES = ["短線（強勢突破）", "中線（趨勢穩定）"]
 LEVEL_RANK = {"S級": 0, "A級": 1, "B級": 2, "C級": 3, "D級": 4}
@@ -92,6 +101,150 @@ def safe_load_json(path, default):
 def safe_save_json(path, data):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def get_secret_or_env(name, default=None):
+    try:
+        value = st.secrets.get(name)
+        if value:
+            return value
+    except Exception:
+        pass
+
+    return os.environ.get(name, default)
+
+
+def github_api_settings():
+    return {
+        "token": get_secret_or_env("GITHUB_TOKEN"),
+        "repo": get_secret_or_env("GITHUB_REPO"),
+        "branch": get_secret_or_env("GITHUB_BRANCH"),
+    }
+
+
+def github_api_headers(token):
+    return {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+
+
+def github_get_file_sha(path):
+    settings = github_api_settings()
+    token = settings["token"]
+    repo = settings["repo"]
+    branch = settings["branch"]
+
+    missing = [name for name, value in {
+        "GITHUB_TOKEN": token,
+        "GITHUB_REPO": repo,
+        "GITHUB_BRANCH": branch,
+    }.items() if not value]
+    if missing:
+        return None, f"缺少 GitHub 設定：{', '.join(missing)}"
+
+    url = f"https://api.github.com/repos/{repo}/contents/{path}"
+    try:
+        response = requests.get(
+            url,
+            headers=github_api_headers(token),
+            params={"ref": branch},
+            timeout=20,
+        )
+    except requests.RequestException as exc:
+        return None, f"GitHub API 讀取失敗：{exc}"
+
+    if response.status_code == 404:
+        return None, None
+    if response.status_code >= 400:
+        return None, f"GitHub API 讀取失敗：HTTP {response.status_code} {response.text[:200]}"
+
+    return response.json().get("sha"), None
+
+
+def github_update_file(path, commit_message):
+    settings = github_api_settings()
+    token = settings["token"]
+    repo = settings["repo"]
+    branch = settings["branch"]
+
+    missing = [name for name, value in {
+        "GITHUB_TOKEN": token,
+        "GITHUB_REPO": repo,
+        "GITHUB_BRANCH": branch,
+    }.items() if not value]
+    if missing:
+        return False, f"缺少 GitHub 設定：{', '.join(missing)}"
+
+    if not os.path.exists(path):
+        return False, "本地檔案不存在"
+
+    sha, sha_error = github_get_file_sha(path)
+    if sha_error:
+        return False, sha_error
+
+    try:
+        with open(path, "rb") as f:
+            content = base64.b64encode(f.read()).decode("utf-8")
+    except OSError as exc:
+        return False, f"讀取本地檔案失敗：{exc}"
+
+    payload = {
+        "message": commit_message,
+        "content": content,
+        "branch": branch,
+    }
+    if sha:
+        payload["sha"] = sha
+
+    url = f"https://api.github.com/repos/{repo}/contents/{path}"
+    try:
+        response = requests.put(
+            url,
+            headers=github_api_headers(token),
+            json=payload,
+            timeout=30,
+        )
+    except requests.RequestException as exc:
+        return False, f"GitHub API 更新失敗：{exc}"
+
+    if response.status_code in (200, 201):
+        return True, None
+
+    return False, f"GitHub API 更新失敗：HTTP {response.status_code} {response.text[:200]}"
+
+
+def persist_runtime_json_files_to_github():
+    result = {
+        "success": [],
+        "failed": [],
+        "skipped": [],
+        "missing_config": [],
+    }
+
+    settings = github_api_settings()
+    missing = [name for name, value in {
+        "GITHUB_TOKEN": settings["token"],
+        "GITHUB_REPO": settings["repo"],
+        "GITHUB_BRANCH": settings["branch"],
+    }.items() if not value]
+    if missing:
+        result["missing_config"] = missing
+        return result
+
+    for path in GITHUB_PERSIST_FILES:
+        if not os.path.exists(path):
+            result["skipped"].append({"path": path, "reason": "本地檔案不存在"})
+            continue
+
+        ok, reason = github_update_file(path, "Persist runtime tracking data")
+        if ok:
+            result["success"].append(path)
+        else:
+            result["failed"].append({"path": path, "reason": reason or "未知錯誤"})
+
+    return result
 
 
 def save_settings(settings):
@@ -1606,6 +1759,29 @@ def maybe_send_scheduled_line():
     return "正式 LINE 只會在 16:00～18:00 手動刷新後發送一次；本頁不會因重新整理而自動發送。"
 
 
+def show_github_persist_result(result):
+    if not result:
+        return
+
+    missing_config = result.get("missing_config", [])
+    if missing_config:
+        st.warning(f"GitHub 寫回未執行，缺少設定：{', '.join(missing_config)}")
+        return
+
+    success = result.get("success", [])
+    failed = result.get("failed", [])
+    skipped = result.get("skipped", [])
+
+    if success:
+        st.success("已寫回 GitHub：" + "、".join(success))
+    if skipped:
+        skipped_text = "、".join(f"{item['path']}（{item['reason']}）" for item in skipped)
+        st.warning("略過 GitHub 寫回：" + skipped_text)
+    if failed:
+        for item in failed:
+            st.error(f"GitHub 寫回失敗：{item['path']}：{item['reason']}")
+
+
 def perform_manual_refresh(scan_limit):
     st.cache_data.clear()
     dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
@@ -1645,8 +1821,9 @@ def perform_manual_refresh(scan_limit):
 
     trade_tracking = update_trade_tracking_records()
     line_status_text = send_official_line_after_manual_refresh()
+    github_persist_result = persist_runtime_json_files_to_github()
 
-    return payload, trade_tracking, line_status_text
+    return payload, trade_tracking, line_status_text, github_persist_result
 
 
 # =========================
@@ -1677,9 +1854,13 @@ with st.sidebar:
     if st.session_state.get("admin_ok") == True:
         if st.button("🔄 手動刷新今日資料"):
             with st.spinner("正在手動刷新今日資料，請勿關閉頁面。"):
-                _, _, refresh_line_status = perform_manual_refresh(scan_limit)
+                _, _, refresh_line_status, github_persist_result = perform_manual_refresh(scan_limit)
             st.session_state["manual_refresh_line_status"] = refresh_line_status
+            st.session_state["github_persist_result"] = github_persist_result
             st.success("今日資料已手動刷新並儲存。")
+            show_github_persist_result(github_persist_result)
+        else:
+            show_github_persist_result(st.session_state.get("github_persist_result"))
     else:
         st.info("資料由管理員於每日 16:00～18:00 手動更新。")
 
