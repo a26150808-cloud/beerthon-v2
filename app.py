@@ -163,8 +163,30 @@ def load_trade_tracking():
     return safe_load_json(TRADE_TRACKING_FILE, {"records": []})
 
 
-def save_trade_tracking(data):
+def save_trade_tracking(data, allow_unsafe_overwrite=False):
+    old_data = safe_load_json(TRADE_TRACKING_FILE, {"records": []})
+    old_records = old_data.get("records", []) if isinstance(old_data, dict) else []
+    new_records = data.get("records", []) if isinstance(data, dict) else []
+    old_count = len(old_records) if isinstance(old_records, list) else 0
+    new_count = len(new_records) if isinstance(new_records, list) else 0
+
+    blocked_reason = None
+    if not allow_unsafe_overwrite:
+        if old_count > 0 and new_count == 0:
+            blocked_reason = f"阻擋 trade_tracking 空資料覆蓋：舊紀錄 {old_count} 筆，新紀錄 0 筆"
+        elif old_count >= 10 and new_count < old_count * 0.5:
+            blocked_reason = f"阻擋 trade_tracking 異常縮水覆蓋：舊紀錄 {old_count} 筆，新紀錄 {new_count} 筆"
+
+    if blocked_reason:
+        append_financial_error("trade_tracking", "save_trade_tracking", "異常覆蓋已阻擋", blocked_reason)
+        try:
+            st.warning(blocked_reason)
+        except Exception:
+            pass
+        return False
+
     safe_save_json(TRADE_TRACKING_FILE, data)
+    return True
 
 
 def load_visitor_stats():
@@ -1491,6 +1513,9 @@ def build_line_message_from_history():
 
 
 def send_official_line_after_manual_refresh():
+    if st.session_state.get("admin_ok") != True:
+        return "正式 LINE 未發送：只有管理員手動刷新後可以觸發。"
+
     now = now_taipei()
     today = now.strftime("%Y-%m-%d")
     log = load_line_log()
@@ -1554,10 +1579,13 @@ with st.sidebar:
 
     st.divider()
 
-    if st.button("🔄 手動刷新今日資料"):
-        st.cache_data.clear()
-        st.session_state["send_official_line_after_refresh"] = True
-        st.success("快取已清除，請重新整理頁面。")
+    if st.session_state.get("admin_ok") == True:
+        if st.button("🔄 手動刷新今日資料"):
+            st.cache_data.clear()
+            st.session_state["send_official_line_after_refresh"] = True
+            st.success("快取已清除，請重新整理頁面。")
+    else:
+        st.info("資料由管理員於每日 16:00～18:00 手動更新。")
 
     st.info("系統會自動快取 24 小時。建議每日 16:00～18:00 手動更新。")
 
@@ -1714,9 +1742,13 @@ with st.spinner("正在讀取今日分析結果，第一次會比較久，之後
 
     trade_tracking = update_trade_tracking_records()
 
-    if st.session_state.pop("send_official_line_after_refresh", False):
+    if (
+        st.session_state.get("admin_ok") == True
+        and st.session_state.pop("send_official_line_after_refresh", False)
+    ):
         line_status_text = send_official_line_after_manual_refresh()
     else:
+        st.session_state.pop("send_official_line_after_refresh", None)
         line_status_text = maybe_send_scheduled_line()
 
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
