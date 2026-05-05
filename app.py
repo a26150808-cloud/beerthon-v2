@@ -1638,9 +1638,9 @@ def build_trade_tracking_display_df(records):
         return df
 
     if "exit_price" not in df.columns:
-        df["exit_price"] = ""
+        df["exit_price"] = pd.NA
     if "exit_date" not in df.columns:
-        df["exit_date"] = ""
+        df["exit_date"] = pd.NA
     if "tracking_day" not in df.columns and "tracking_days" in df.columns:
         df["tracking_day"] = df["tracking_days"]
 
@@ -1648,13 +1648,15 @@ def build_trade_tracking_display_df(records):
         entry = pd.to_numeric(df["entry_price"], errors="coerce")
         exit_price = pd.to_numeric(df["exit_price"], errors="coerce")
         valid_return = entry.notna() & exit_price.notna() & (entry != 0)
-        df["實際報酬%"] = ""
-        df.loc[valid_return, "實際報酬%"] = (
+        return_pct = pd.Series(pd.NA, index=df.index, dtype="Float64")
+        return_pct.loc[valid_return] = (
             (exit_price[valid_return] - entry[valid_return]) / entry[valid_return] * 100
         ).round(2)
+        df["實際報酬%"] = return_pct
 
     existing_columns = [c for c in TRADE_TRACKING_DISPLAY_COLUMNS if c in df.columns]
-    return df[existing_columns]
+    display_df = df[existing_columns].copy()
+    return display_df.astype("object").where(pd.notna(display_df), "")
 
 
 def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
