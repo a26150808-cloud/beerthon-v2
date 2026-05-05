@@ -1604,6 +1604,59 @@ def filter_trade_records_by_period(records, period_label):
     return filtered
 
 
+TRADE_STATUS_FILTERS = {
+    "全部": None,
+    "已停利 win": "win",
+    "已停損 loss": "loss",
+    "持有中 holding": "holding",
+    "已過期 expired": "expired",
+}
+
+TRADE_CLOSED_STATUSES = ("win", "loss", "expired")
+
+TRADE_TRACKING_DISPLAY_COLUMNS = [
+    "analysis_date", "strategy_mode", "source", "股票代號", "股票名稱",
+    "等級", "總分", "entry_price", "stop_loss", "take_profit",
+    "exit_price", "實際報酬%", "status", "exit_reason", "exit_date",
+    "tracking_day",
+]
+
+
+def filter_trade_records_by_status(records, status_label):
+    status = TRADE_STATUS_FILTERS.get(status_label)
+    if status is None:
+        return records
+    return [r for r in records if r.get("status", "holding") == status]
+
+
+def build_trade_tracking_display_df(records):
+    if not records:
+        return pd.DataFrame()
+
+    df = pd.DataFrame(records).copy()
+    if df.empty:
+        return df
+
+    if "exit_price" not in df.columns:
+        df["exit_price"] = ""
+    if "exit_date" not in df.columns:
+        df["exit_date"] = ""
+    if "tracking_day" not in df.columns and "tracking_days" in df.columns:
+        df["tracking_day"] = df["tracking_days"]
+
+    if "entry_price" in df.columns and "exit_price" in df.columns:
+        entry = pd.to_numeric(df["entry_price"], errors="coerce")
+        exit_price = pd.to_numeric(df["exit_price"], errors="coerce")
+        valid_return = entry.notna() & exit_price.notna() & (entry != 0)
+        df["實際報酬%"] = ""
+        df.loc[valid_return, "實際報酬%"] = (
+            (exit_price[valid_return] - entry[valid_return]) / entry[valid_return] * 100
+        ).round(2)
+
+    existing_columns = [c for c in TRADE_TRACKING_DISPLAY_COLUMNS if c in df.columns]
+    return df[existing_columns]
+
+
 def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
     history = load_top10_history(path)
     records = [
@@ -2056,23 +2109,40 @@ else:
         tracking_summary = summarize_trade_tracking(filtered_tracking_records)
         st.dataframe(pd.DataFrame([tracking_summary]), use_container_width=True, hide_index=True)
 
-        if filtered_tracking_records:
+        status_filter = st.selectbox(
+            "狀態篩選",
+            options=list(TRADE_STATUS_FILTERS.keys()),
+            key="trade_tracking_status_filter"
+        )
+        status_filtered_records = filter_trade_records_by_status(filtered_tracking_records, status_filter)
+
+        st.subheader("回測紀錄查詢")
+        if status_filtered_records:
             recent_records = sorted(
-                filtered_tracking_records,
+                status_filtered_records,
                 key=lambda r: r.get("analysis_time", ""),
                 reverse=True
             )[:20]
-            recent_df = pd.DataFrame(recent_records)
-            recent_columns = [
-                "analysis_date", "strategy_mode", "source", "股票代號", "股票名稱",
-                "等級", "總分", "entry_price", "stop_loss", "take_profit",
-                "status", "exit_reason", "tracking_days", "return_pct",
-                "latest_price", "exit_date", "max_tracking_days"
-            ]
-            existing_recent_columns = [c for c in recent_columns if c in recent_df.columns]
-            st.dataframe(recent_df[existing_recent_columns], use_container_width=True, hide_index=True)
+            recent_df = build_trade_tracking_display_df(recent_records)
+            st.dataframe(recent_df, use_container_width=True, hide_index=True)
         else:
-            st.info("目前沒有選股追蹤紀錄。")
+            st.info("目前沒有符合篩選條件的選股追蹤紀錄。")
+
+        st.subheader("已結案交易")
+        closed_records = [
+            r for r in filtered_tracking_records
+            if r.get("status") in TRADE_CLOSED_STATUSES
+        ]
+        if closed_records:
+            closed_records = sorted(
+                closed_records,
+                key=lambda r: r.get("exit_date") or r.get("analysis_time", ""),
+                reverse=True
+            )
+            closed_df = build_trade_tracking_display_df(closed_records)
+            st.dataframe(closed_df, use_container_width=True, hide_index=True)
+        else:
+            st.info("目前沒有已結案交易。")
 
     best = top10.iloc[0]
 
