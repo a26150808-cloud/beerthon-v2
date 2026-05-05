@@ -2120,13 +2120,14 @@ else:
 
         st.subheader("回測紀錄查詢")
         if status_filtered_records:
-            recent_records = sorted(
+            query_records = sorted(
                 status_filtered_records,
                 key=lambda r: r.get("analysis_time", ""),
                 reverse=True
-            )[:20]
-            recent_df = build_trade_tracking_display_df(recent_records)
-            st.dataframe(recent_df, use_container_width=True, hide_index=True)
+            )
+            query_df = build_trade_tracking_display_df(query_records)
+            st.caption(f"目前顯示 {len(query_records)} 筆符合條件的追蹤紀錄。")
+            st.dataframe(query_df, use_container_width=True, hide_index=True)
         else:
             st.info("目前沒有符合篩選條件的選股追蹤紀錄。")
 
@@ -2142,6 +2143,7 @@ else:
                 reverse=True
             )
             closed_df = build_trade_tracking_display_df(closed_records)
+            st.caption(f"目前顯示 {len(closed_records)} 筆已結案交易。")
             st.dataframe(closed_df, use_container_width=True, hide_index=True)
         else:
             st.info("目前沒有已結案交易。")
