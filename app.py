@@ -22,27 +22,54 @@ def line_target_id_loaded():
     return any(has_secret_or_env(name) for name in target_names)
 
 
-def get_line_target_id():
-    target_names = ["LINE_TARGET_ID", "LINE_USER_ID", "LINE_GROUP_ID", "LINE_TO"]
+def infer_line_target_type(name, value):
+    if name == "LINE_GROUP_ID":
+        return "group"
+    if name == "LINE_USER_ID":
+        return "user"
+    if str(value).startswith("C"):
+        return "group"
+    if str(value).startswith("U"):
+        return "user"
+    return "unknown"
+
+
+def get_line_target_info():
+    target_names = ["LINE_GROUP_ID", "LINE_TARGET_ID", "LINE_USER_ID", "LINE_TO"]
     for name in target_names:
+        value = None
         try:
             value = st.secrets.get(name)
-            if value:
-                return value
         except Exception:
             pass
 
-        value = os.environ.get(name)
-        if value:
-            return value
+        if not value:
+            value = os.environ.get(name)
 
-    return None
+        if value:
+            return {
+                "id": value,
+                "source": name,
+                "type": infer_line_target_type(name, value),
+            }
+
+    return {
+        "id": None,
+        "source": "",
+        "type": "",
+    }
+
+
+def get_line_target_id():
+    return get_line_target_info()["id"]
 
 
 def send_line_message_response(message):
     token_loaded = False
-    target_id = get_line_target_id()
+    target_info = get_line_target_info()
+    target_id = target_info["id"]
     target_id_loaded = bool(target_id)
+    line_target_type = target_info["type"]
 
     try:
         token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
@@ -58,6 +85,7 @@ def send_line_message_response(message):
                 "error": str(exc),
                 "token_loaded": token_loaded,
                 "target_id_loaded": target_id_loaded,
+                "line_target_type": line_target_type,
                 "line_endpoint": "skipped_no_token",
                 "api_called": False,
             }
@@ -70,6 +98,7 @@ def send_line_message_response(message):
             "error": "missing_line_target_id",
             "token_loaded": token_loaded,
             "target_id_loaded": target_id_loaded,
+            "line_target_type": line_target_type,
             "line_endpoint": "skipped_no_target",
             "api_called": False,
         }
@@ -101,6 +130,7 @@ def send_line_message_response(message):
             "error": str(exc),
             "token_loaded": token_loaded,
             "target_id_loaded": target_id_loaded,
+            "line_target_type": line_target_type,
             "line_endpoint": "push",
             "api_called": True,
         }
@@ -111,6 +141,7 @@ def send_line_message_response(message):
         "body": r.text[:300],
         "token_loaded": token_loaded,
         "target_id_loaded": target_id_loaded,
+        "line_target_type": line_target_type,
         "line_endpoint": "push",
         "api_called": True,
     }
@@ -156,6 +187,7 @@ def build_line_send_diagnostics(line_result):
     headers = line_result.get("headers", {}) if isinstance(line_result, dict) else {}
     return {
         "line_endpoint": line_result.get("line_endpoint", "") if isinstance(line_result, dict) else "",
+        "line_target_type": line_result.get("line_target_type", "") if isinstance(line_result, dict) else "",
         "target_id_loaded": bool(line_result.get("target_id_loaded", False)) if isinstance(line_result, dict) else False,
         "token_loaded": bool(line_result.get("token_loaded", False)) if isinstance(line_result, dict) else False,
         "status_code": line_result.get("status", "") if isinstance(line_result, dict) else "",
@@ -1938,6 +1970,7 @@ def init_official_line_diagnostics(now, log, refresh_started_at=None):
         "今日已發送是否阻擋": False,
         "是否進入 send_line_message()": False,
         "line_endpoint": "",
+        "line_target_type": get_line_target_info()["type"],
         "target_id_loaded": line_target_id_loaded(),
         "token_loaded": has_secret_or_env("LINE_CHANNEL_ACCESS_TOKEN"),
         "status_code": "",
@@ -2124,6 +2157,11 @@ with st.sidebar:
     st.divider()
 
     if st.session_state.get("admin_ok") == True:
+        if has_secret_or_env("LINE_GROUP_ID"):
+            st.success("已讀取 LINE_GROUP_ID。")
+        else:
+            st.warning("尚未設定 LINE_GROUP_ID。")
+
         if st.button("🔄 手動刷新今日資料"):
             with st.spinner("正在手動刷新今日資料，請勿關閉頁面。"):
                 _, _, refresh_line_status, github_persist_result, official_line_result = perform_manual_refresh(scan_limit)
