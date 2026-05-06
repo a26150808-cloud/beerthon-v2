@@ -6,16 +6,41 @@ import hashlib
 import requests
 import base64
 
+def has_secret_or_env(name):
+    try:
+        value = st.secrets.get(name)
+        if value:
+            return True
+    except Exception:
+        pass
+
+    return bool(os.environ.get(name))
+
+
+def line_target_id_loaded():
+    target_names = ["LINE_USER_ID", "LINE_GROUP_ID", "LINE_TARGET_ID", "LINE_TO"]
+    return any(has_secret_or_env(name) for name in target_names)
+
+
 def send_line_message_response(message):
+    token_loaded = False
+    target_id_loaded = line_target_id_loaded()
+
     try:
         token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
+        token_loaded = bool(token)
     except Exception as exc:
-        return {
-            "status": None,
-            "headers": {},
-            "body": f"LINE TOKEN 讀取失敗：{exc}",
-            "error": str(exc),
-        }
+        token = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
+        token_loaded = bool(token)
+        if not token:
+            return {
+                "status": None,
+                "headers": {},
+                "body": f"LINE TOKEN 讀取失敗：{exc}",
+                "error": str(exc),
+                "token_loaded": token_loaded,
+                "target_id_loaded": target_id_loaded,
+            }
 
     url = "https://api.line.me/v2/bot/message/broadcast"
 
@@ -41,12 +66,16 @@ def send_line_message_response(message):
             "headers": {},
             "body": f"LINE API 呼叫失敗：{exc}",
             "error": str(exc),
+            "token_loaded": token_loaded,
+            "target_id_loaded": target_id_loaded,
         }
 
     return {
         "status": r.status_code,
         "headers": dict(r.headers),
         "body": r.text[:300],
+        "token_loaded": token_loaded,
+        "target_id_loaded": target_id_loaded,
     }
 
 
@@ -66,13 +95,33 @@ def format_line_send_failure(status, headers=None):
         return "LINE 發送失敗：未取得 status_code。"
 
     if status == 429:
-        message = "LINE 發送太頻繁或超過限制，請稍後再試。"
+        message = "LINE 回傳 429，代表發送太頻繁、超過限制或被 LINE 暫時限流。"
         retry_after = get_header_value(headers, "Retry-After")
         if retry_after:
             message += f" 建議等待 {retry_after} 秒後再試。"
         return message
 
     return f"LINE 發送失敗：{status}"
+
+
+def build_line_send_diagnostics(line_result):
+    headers = line_result.get("headers", {}) if isinstance(line_result, dict) else {}
+    return {
+        "status_code": line_result.get("status", "") if isinstance(line_result, dict) else "",
+        "response body": line_result.get("body", "") if isinstance(line_result, dict) else "",
+        "Retry-After": get_header_value(headers, "Retry-After") or "",
+        "LINE token 是否有讀到": bool(line_result.get("token_loaded", False)) if isinstance(line_result, dict) else False,
+        "LINE user/group id 是否有讀到": bool(line_result.get("target_id_loaded", False)) if isinstance(line_result, dict) else False,
+    }
+
+
+def render_line_send_diagnostics(title, line_result):
+    st.subheader(title)
+    st.dataframe(
+        pd.DataFrame([build_line_send_diagnostics(line_result)]),
+        use_container_width=True,
+        hide_index=True,
+    )
 import json
 import os
 import uuid
@@ -1837,8 +1886,10 @@ def init_official_line_diagnostics(now, log, refresh_started_at=None):
         "今日已發送是否阻擋": False,
         "是否進入 send_line_message()": False,
         "status_code": "",
-        "response_body": "",
+        "response body": "",
         "Retry-After": "",
+        "LINE token 是否有讀到": has_secret_or_env("LINE_CHANNEL_ACCESS_TOKEN"),
+        "LINE user/group id 是否有讀到": line_target_id_loaded(),
         "未進入正式推播條件": "",
     }
 
@@ -1894,9 +1945,8 @@ def send_official_line_after_manual_refresh(refresh_started_at=None):
     status = line_result["status"]
     headers = line_result.get("headers", {})
     body = line_result.get("body", "")
-    diagnostics["status_code"] = "" if status is None else status
-    diagnostics["response_body"] = body
-    diagnostics["Retry-After"] = get_header_value(headers, "Retry-After") or ""
+    line_send_diagnostics = build_line_send_diagnostics(line_result)
+    diagnostics.update(line_send_diagnostics)
     log["last_checked_at"] = format_taipei_dt(now)
     log["last_official_status"] = status
     log["last_official_body"] = body
@@ -2145,6 +2195,7 @@ if st.session_state.get("admin_ok") == True:
         line_test_remaining_seconds = max(0, int(LINE_TEST_COOLDOWN_SECONDS - elapsed_seconds))
 
     if line_test_remaining_seconds > 0:
+        st.warning("測試發送冷卻中，請稍後再試。")
         st.caption(f"LINE 測試發送冷卻中，請 {line_test_remaining_seconds} 秒後再試。")
 
     if st.button(
@@ -2152,31 +2203,42 @@ if st.session_state.get("admin_ok") == True:
         disabled=line_test_remaining_seconds > 0,
         key="line_test_button"
     ):
-        st.session_state["last_line_test_sent_at"] = now_taipei()
-        line_message, line_reason = build_line_message_from_history()
-        test_message = "🔥 LINE測試成功，你的選股系統已連動\n\n"
-        if line_message:
-            test_message += line_message
-        else:
-            test_message += f"正式通知內容目前無法產生：{line_reason}\n"
-            test_message += build_low_price_line_section()
+        clicked_at = now_taipei()
+        last_line_test_sent_at = st.session_state.get("last_line_test_sent_at")
+        can_send_line_test = True
+        if last_line_test_sent_at:
+            elapsed_seconds = (clicked_at - last_line_test_sent_at).total_seconds()
+            if elapsed_seconds < LINE_TEST_COOLDOWN_SECONDS:
+                st.warning("測試發送冷卻中，請稍後再試。")
+                can_send_line_test = False
 
-        line_result = send_line_message_response(test_message)
-        status = line_result["status"]
-        headers = line_result.get("headers", {})
-        test_log = load_line_test_log()
-        test_log.setdefault("tests", []).append({
-            "time": format_taipei_dt(),
-            "status": status,
-            "retry_after": get_header_value(headers, "Retry-After"),
-        })
-        test_log["tests"] = test_log["tests"][-100:]
-        save_line_test_log(test_log)
+        if can_send_line_test:
+            st.session_state["last_line_test_sent_at"] = clicked_at
+            line_message, line_reason = build_line_message_from_history()
+            test_message = "🔥 LINE測試成功，你的選股系統已連動\n\n"
+            if line_message:
+                test_message += line_message
+            else:
+                test_message += f"正式通知內容目前無法產生：{line_reason}\n"
+                test_message += build_low_price_line_section()
 
-        if status == 200:
-            st.success("LINE測試發送成功，不會影響正式發送狀態")
-        else:
-            st.error(format_line_send_failure(status, headers))
+            line_result = send_line_message_response(test_message)
+            status = line_result["status"]
+            headers = line_result.get("headers", {})
+            test_log = load_line_test_log()
+            test_log.setdefault("tests", []).append({
+                "time": format_taipei_dt(),
+                "status": status,
+                "retry_after": get_header_value(headers, "Retry-After"),
+            })
+            test_log["tests"] = test_log["tests"][-100:]
+            save_line_test_log(test_log)
+
+            if status == 200:
+                st.success("LINE測試發送成功，不會影響正式發送狀態")
+            else:
+                st.error(format_line_send_failure(status, headers))
+                render_line_send_diagnostics("LINE 測試發送診斷", line_result)
 
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
 st.caption(f"目前顯示策略：{display_strategy}。一般瀏覽只讀取已儲存結果，不會重新抓資料。")
