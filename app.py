@@ -22,9 +22,27 @@ def line_target_id_loaded():
     return any(has_secret_or_env(name) for name in target_names)
 
 
+def get_line_target_id():
+    target_names = ["LINE_TARGET_ID", "LINE_USER_ID", "LINE_GROUP_ID", "LINE_TO"]
+    for name in target_names:
+        try:
+            value = st.secrets.get(name)
+            if value:
+                return value
+        except Exception:
+            pass
+
+        value = os.environ.get(name)
+        if value:
+            return value
+
+    return None
+
+
 def send_line_message_response(message):
     token_loaded = False
-    target_id_loaded = line_target_id_loaded()
+    target_id = get_line_target_id()
+    target_id_loaded = bool(target_id)
 
     try:
         token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
@@ -40,9 +58,23 @@ def send_line_message_response(message):
                 "error": str(exc),
                 "token_loaded": token_loaded,
                 "target_id_loaded": target_id_loaded,
+                "line_endpoint": "skipped_no_token",
+                "api_called": False,
             }
 
-    url = "https://api.line.me/v2/bot/message/broadcast"
+    if not target_id:
+        return {
+            "status": None,
+            "headers": {},
+            "body": "未設定 LINE_TARGET_ID，為避免廣播消耗額度，已取消發送。",
+            "error": "missing_line_target_id",
+            "token_loaded": token_loaded,
+            "target_id_loaded": target_id_loaded,
+            "line_endpoint": "skipped_no_target",
+            "api_called": False,
+        }
+
+    url = "https://api.line.me/v2/bot/message/push"
 
     headers = {
         "Authorization": f"Bearer {token}",
@@ -50,6 +82,7 @@ def send_line_message_response(message):
     }
 
     data = {
+        "to": target_id,
         "messages": [
             {
                 "type": "text",
@@ -68,6 +101,8 @@ def send_line_message_response(message):
             "error": str(exc),
             "token_loaded": token_loaded,
             "target_id_loaded": target_id_loaded,
+            "line_endpoint": "push",
+            "api_called": True,
         }
 
     return {
@@ -76,6 +111,8 @@ def send_line_message_response(message):
         "body": r.text[:300],
         "token_loaded": token_loaded,
         "target_id_loaded": target_id_loaded,
+        "line_endpoint": "push",
+        "api_called": True,
     }
 
 
@@ -104,14 +141,29 @@ def format_line_send_failure(status, headers=None):
     return f"LINE 發送失敗：{status}"
 
 
+def format_line_result_message(line_result):
+    if not isinstance(line_result, dict):
+        return "LINE 發送失敗：未取得 status_code。"
+
+    status = line_result.get("status")
+    if status is None and line_result.get("body"):
+        return line_result["body"]
+
+    return format_line_send_failure(status, line_result.get("headers", {}))
+
+
 def build_line_send_diagnostics(line_result):
     headers = line_result.get("headers", {}) if isinstance(line_result, dict) else {}
     return {
+        "line_endpoint": line_result.get("line_endpoint", "") if isinstance(line_result, dict) else "",
+        "target_id_loaded": bool(line_result.get("target_id_loaded", False)) if isinstance(line_result, dict) else False,
+        "token_loaded": bool(line_result.get("token_loaded", False)) if isinstance(line_result, dict) else False,
         "status_code": line_result.get("status", "") if isinstance(line_result, dict) else "",
         "response body": line_result.get("body", "") if isinstance(line_result, dict) else "",
         "Retry-After": get_header_value(headers, "Retry-After") or "",
         "LINE token 是否有讀到": bool(line_result.get("token_loaded", False)) if isinstance(line_result, dict) else False,
         "LINE user/group id 是否有讀到": bool(line_result.get("target_id_loaded", False)) if isinstance(line_result, dict) else False,
+        "是否呼叫 LINE API": bool(line_result.get("api_called", False)) if isinstance(line_result, dict) else False,
     }
 
 
@@ -1885,6 +1937,9 @@ def init_official_line_diagnostics(now, log, refresh_started_at=None):
         "今日是否已發送": log.get("last_official_sent_date") == today,
         "今日已發送是否阻擋": False,
         "是否進入 send_line_message()": False,
+        "line_endpoint": "",
+        "target_id_loaded": line_target_id_loaded(),
+        "token_loaded": has_secret_or_env("LINE_CHANNEL_ACCESS_TOKEN"),
         "status_code": "",
         "response body": "",
         "Retry-After": "",
@@ -1965,7 +2020,7 @@ def send_official_line_after_manual_refresh(refresh_started_at=None):
     log["last_failed_status"] = status
     save_line_log(log)
     return build_official_line_result(
-        format_line_send_failure(status, headers),
+        format_line_result_message(line_result),
         diagnostics,
     )
 
@@ -2237,7 +2292,7 @@ if st.session_state.get("admin_ok") == True:
             if status == 200:
                 st.success("LINE測試發送成功，不會影響正式發送狀態")
             else:
-                st.error(format_line_send_failure(status, headers))
+                st.error(format_line_result_message(line_result))
                 render_line_send_diagnostics("LINE 測試發送診斷", line_result)
 
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
