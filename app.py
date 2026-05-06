@@ -6,8 +6,16 @@ import hashlib
 import requests
 import base64
 
-def send_line_message(message):
-    token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
+def send_line_message_response(message):
+    try:
+        token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
+    except Exception as exc:
+        return {
+            "status": None,
+            "headers": {},
+            "body": f"LINE TOKEN 讀取失敗：{exc}",
+            "error": str(exc),
+        }
 
     url = "https://api.line.me/v2/bot/message/broadcast"
 
@@ -25,8 +33,46 @@ def send_line_message(message):
         ]
     }
 
-    r = requests.post(url, headers=headers, json=data)
-    return r.status_code
+    try:
+        r = requests.post(url, headers=headers, json=data, timeout=30)
+    except requests.RequestException as exc:
+        return {
+            "status": None,
+            "headers": {},
+            "body": f"LINE API 呼叫失敗：{exc}",
+            "error": str(exc),
+        }
+
+    return {
+        "status": r.status_code,
+        "headers": dict(r.headers),
+        "body": r.text[:300],
+    }
+
+
+def send_line_message(message):
+    return send_line_message_response(message)["status"]
+
+
+def get_header_value(headers, target_name):
+    for name, value in (headers or {}).items():
+        if str(name).lower() == target_name.lower():
+            return value
+    return None
+
+
+def format_line_send_failure(status, headers=None):
+    if status is None:
+        return "LINE 發送失敗：未取得 status_code。"
+
+    if status == 429:
+        message = "LINE 發送太頻繁或超過限制，請稍後再試。"
+        retry_after = get_header_value(headers, "Retry-After")
+        if retry_after:
+            message += f" 建議等待 {retry_after} 秒後再試。"
+        return message
+
+    return f"LINE 發送失敗：{status}"
 import json
 import os
 import uuid
@@ -55,6 +101,7 @@ TOP10_HISTORY_FILE = "top10_history.json"
 LOW_PRICE_TOP10_HISTORY_FILE = "low_price_top10_history.json"
 TRADE_TRACKING_FILE = "trade_tracking.json"
 VISITOR_STATS_FILE = "visitor_stats.json"
+LINE_TEST_COOLDOWN_SECONDS = 60
 GITHUB_PERSIST_FILES = [
     TRADE_TRACKING_FILE,
     ANALYSIS_RESULT_FILE,
@@ -1772,19 +1819,63 @@ def build_line_message_from_history():
     return msg, None
 
 
-def send_official_line_after_manual_refresh():
-    if st.session_state.get("admin_ok") != True:
-        return "正式 LINE 未發送：只有管理員手動刷新後可以觸發。"
+def build_official_line_result(message, diagnostics):
+    return {
+        "message": message,
+        "diagnostics": diagnostics,
+    }
 
+
+def init_official_line_diagnostics(now, log, refresh_started_at=None):
+    trigger_time = refresh_started_at or now
+    today = trigger_time.strftime("%Y-%m-%d")
+    return {
+        "現在台北時間": format_taipei_dt(now),
+        "手動刷新開始台北時間": format_taipei_dt(trigger_time),
+        "符合正式推播時段": time(16, 0) <= trigger_time.time() <= time(18, 0),
+        "今日是否已發送": log.get("last_official_sent_date") == today,
+        "今日已發送是否阻擋": False,
+        "是否進入 send_line_message()": False,
+        "status_code": "",
+        "response_body": "",
+        "Retry-After": "",
+        "未進入正式推播條件": "",
+    }
+
+
+def render_official_line_diagnostics(result):
+    if not result:
+        return
+
+    diagnostics = result.get("diagnostics", {})
+    if not diagnostics:
+        return
+
+    st.subheader("LINE 正式推播診斷")
+    st.dataframe(pd.DataFrame([diagnostics]), use_container_width=True, hide_index=True)
+
+
+def send_official_line_after_manual_refresh(refresh_started_at=None):
     now = now_taipei()
-    today = now.strftime("%Y-%m-%d")
     log = load_line_log()
+    diagnostics = init_official_line_diagnostics(now, log, refresh_started_at)
 
-    if not (time(16, 0) <= now.time() <= time(18, 0)):
-        return "正式 LINE 未發送：只允許在 16:00～18:00 手動刷新後發送。"
+    if st.session_state.get("admin_ok") != True:
+        diagnostics["未進入正式推播條件"] = "只有管理員手動刷新後可以觸發"
+        return build_official_line_result(
+            "未進入正式推播條件：只有管理員手動刷新後可以觸發。",
+            diagnostics,
+        )
 
-    if log.get("last_official_sent_date") == today:
-        return "今日正式 LINE 已發送過，不會重複發送。"
+    trigger_time = refresh_started_at or now
+    today = trigger_time.strftime("%Y-%m-%d")
+
+    if not diagnostics["符合正式推播時段"]:
+        diagnostics["未進入正式推播條件"] = "不在 16:00～18:00 正式推播時段"
+        return build_official_line_result(
+            "未進入正式推播條件：只允許在 16:00～18:00 手動刷新後發送。",
+            diagnostics,
+        )
 
     msg, reason = build_line_message_from_history()
     if reason:
@@ -1792,26 +1883,45 @@ def send_official_line_after_manual_refresh():
         log["last_skip_reason"] = reason
         log["last_checked_at"] = format_taipei_dt(now)
         save_line_log(log)
-        return f"正式 LINE 未發送：{reason}"
+        diagnostics["未進入正式推播條件"] = reason
+        return build_official_line_result(
+            f"未進入正式推播條件：{reason}",
+            diagnostics,
+        )
 
-    status = send_line_message(msg)
+    diagnostics["是否進入 send_line_message()"] = True
+    line_result = send_line_message_response(msg)
+    status = line_result["status"]
+    headers = line_result.get("headers", {})
+    body = line_result.get("body", "")
+    diagnostics["status_code"] = "" if status is None else status
+    diagnostics["response_body"] = body
+    diagnostics["Retry-After"] = get_header_value(headers, "Retry-After") or ""
     log["last_checked_at"] = format_taipei_dt(now)
     log["last_official_status"] = status
+    log["last_official_body"] = body
+    log["last_official_retry_after"] = diagnostics["Retry-After"]
 
     if status == 200:
         log["last_official_sent_date"] = today
         log["last_official_sent_at"] = format_taipei_dt(now)
         save_line_log(log)
-        return "正式 LINE 已於手動刷新後送出。"
+        return build_official_line_result(
+            "正式 LINE 已於手動刷新後送出。",
+            diagnostics,
+        )
 
     log["last_failed_date"] = today
     log["last_failed_status"] = status
     save_line_log(log)
-    return f"正式 LINE 發送失敗：{status}"
+    return build_official_line_result(
+        format_line_send_failure(status, headers),
+        diagnostics,
+    )
 
 
 def maybe_send_scheduled_line():
-    return "正式 LINE 只會在 16:00～18:00 手動刷新後發送一次；本頁不會因重新整理而自動發送。"
+    return "正式 LINE 只會在管理員於 16:00～18:00 手動刷新後發送；本頁不會因重新整理而自動發送。"
 
 
 def show_github_persist_result(result):
@@ -1838,6 +1948,7 @@ def show_github_persist_result(result):
 
 
 def perform_manual_refresh(scan_limit):
+    refresh_started_at = now_taipei()
     st.cache_data.clear()
     dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
 
@@ -1875,10 +1986,11 @@ def perform_manual_refresh(scan_limit):
             record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
 
     trade_tracking = update_trade_tracking_records()
-    line_status_text = send_official_line_after_manual_refresh()
+    official_line_result = send_official_line_after_manual_refresh(refresh_started_at)
+    line_status_text = official_line_result.get("message", "")
     github_persist_result = persist_runtime_json_files_to_github()
 
-    return payload, trade_tracking, line_status_text, github_persist_result
+    return payload, trade_tracking, line_status_text, github_persist_result, official_line_result
 
 
 # =========================
@@ -1909,12 +2021,15 @@ with st.sidebar:
     if st.session_state.get("admin_ok") == True:
         if st.button("🔄 手動刷新今日資料"):
             with st.spinner("正在手動刷新今日資料，請勿關閉頁面。"):
-                _, _, refresh_line_status, github_persist_result = perform_manual_refresh(scan_limit)
+                _, _, refresh_line_status, github_persist_result, official_line_result = perform_manual_refresh(scan_limit)
             st.session_state["manual_refresh_line_status"] = refresh_line_status
             st.session_state["github_persist_result"] = github_persist_result
+            st.session_state["official_line_result"] = official_line_result
             st.success("今日資料已手動刷新並儲存。")
+            render_official_line_diagnostics(official_line_result)
             show_github_persist_result(github_persist_result)
         else:
+            render_official_line_diagnostics(st.session_state.get("official_line_result"))
             show_github_persist_result(st.session_state.get("github_persist_result"))
     else:
         st.info("資料由管理員於每日 16:00～18:00 手動更新。")
@@ -2023,7 +2138,21 @@ line_status_text = st.session_state.pop("manual_refresh_line_status", maybe_send
 st.caption(f"📅 上次分析完成時間：{analysis_time}")
 
 if st.session_state.get("admin_ok") == True:
-    if st.button("📱 測試LINE通知"):
+    line_test_remaining_seconds = 0
+    last_line_test_sent_at = st.session_state.get("last_line_test_sent_at")
+    if last_line_test_sent_at:
+        elapsed_seconds = (now_taipei() - last_line_test_sent_at).total_seconds()
+        line_test_remaining_seconds = max(0, int(LINE_TEST_COOLDOWN_SECONDS - elapsed_seconds))
+
+    if line_test_remaining_seconds > 0:
+        st.caption(f"LINE 測試發送冷卻中，請 {line_test_remaining_seconds} 秒後再試。")
+
+    if st.button(
+        "📱 測試LINE通知",
+        disabled=line_test_remaining_seconds > 0,
+        key="line_test_button"
+    ):
+        st.session_state["last_line_test_sent_at"] = now_taipei()
         line_message, line_reason = build_line_message_from_history()
         test_message = "🔥 LINE測試成功，你的選股系統已連動\n\n"
         if line_message:
@@ -2032,11 +2161,14 @@ if st.session_state.get("admin_ok") == True:
             test_message += f"正式通知內容目前無法產生：{line_reason}\n"
             test_message += build_low_price_line_section()
 
-        status = send_line_message(test_message)
+        line_result = send_line_message_response(test_message)
+        status = line_result["status"]
+        headers = line_result.get("headers", {})
         test_log = load_line_test_log()
         test_log.setdefault("tests", []).append({
             "time": format_taipei_dt(),
-            "status": status
+            "status": status,
+            "retry_after": get_header_value(headers, "Retry-After"),
         })
         test_log["tests"] = test_log["tests"][-100:]
         save_line_test_log(test_log)
@@ -2044,7 +2176,7 @@ if st.session_state.get("admin_ok") == True:
         if status == 200:
             st.success("LINE測試發送成功，不會影響正式發送狀態")
         else:
-            st.error(f"測試發送失敗：{status}")
+            st.error(format_line_send_failure(status, headers))
 
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
 st.caption(f"目前顯示策略：{display_strategy}。一般瀏覽只讀取已儲存結果，不會重新抓資料。")
