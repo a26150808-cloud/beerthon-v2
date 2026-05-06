@@ -797,17 +797,29 @@ def is_signal(df, i, strategy_mode):
 # 回測
 # =========================
 
+def trade_tracking_days_for_strategy(strategy_mode):
+    if "中線" in strategy_mode:
+        return 60
+    return 20
+
+
+def trade_target_prices(entry_price, strategy_mode):
+    if "中線" in strategy_mode:
+        return round(entry_price * 0.88, 2), round(entry_price * 1.18, 2)
+    return round(entry_price * 0.93, 2), round(entry_price * 1.10, 2)
+
+
 def backtest(df, years=3, strategy_mode="短線（強勢突破）"):
     test_df = df.tail(years * 250).copy()
     trades = []
+    max_holding_days = trade_tracking_days_for_strategy(strategy_mode)
 
-    for i in range(60, len(test_df) - 20):
+    for i in range(60, len(test_df) - max_holding_days):
         if is_signal(test_df, i, strategy_mode):
             entry = float(test_df.iloc[i]["Close"])
-            stop_loss = entry * 0.93
-            take_profit = entry * 1.10
+            stop_loss, take_profit = trade_target_prices(entry, strategy_mode)
 
-            for j in range(i + 1, min(i + 21, len(test_df))):
+            for j in range(i + 1, min(i + max_holding_days + 1, len(test_df))):
                 low = float(test_df.iloc[j]["Low"])
                 high = float(test_df.iloc[j]["High"])
                 close = float(test_df.iloc[j]["Close"])
@@ -820,7 +832,7 @@ def backtest(df, years=3, strategy_mode="短線（強勢突破）"):
                     trades.append((take_profit - entry) / entry * 100)
                     break
 
-                if j == min(i + 20, len(test_df) - 1):
+                if j == min(i + max_holding_days, len(test_df) - 1):
                     trades.append((close - entry) / entry * 100)
                     break
 
@@ -1103,13 +1115,7 @@ def analyze_stock(symbol, info, strategy_mode, df=None, financial_data=None):
     else:
         financial_score, financial_note = financial_data
 
-    recent_low = float(df["Low"].tail(20).min())
-    ma20 = float(latest["MA20"])
-
-    stop_loss = max(close * 0.93, ma20 * 0.98, recent_low * 0.98)
-    if stop_loss >= close:
-        stop_loss = close * 0.93
-    tp1 = close * 1.10
+    stop_loss, tp1 = trade_target_prices(close, strategy_mode)
     tp2 = close * 1.20
 
     return {
@@ -1147,8 +1153,8 @@ def analyze_stock(symbol, info, strategy_mode, df=None, financial_data=None):
         "財報分數": financial_score,
         "財報備註": financial_note,
 
-        "建議停損": round(stop_loss, 2),
-        "第一停利": round(tp1, 2),
+        "建議停損": stop_loss,
+        "第一停利": tp1,
         "第二停利": round(tp2, 2),
     }
 
@@ -1580,9 +1586,8 @@ def record_trade_candidates(analysis_time, strategy_mode, candidates_df, source)
             continue
 
         entry_price = float(row["收盤價"])
-        max_tracking_days = 20 if "短線" in strategy_mode else 60
-        stop_loss = float(row["建議停損"])
-        take_profit = float(row["第一停利"])
+        max_tracking_days = trade_tracking_days_for_strategy(strategy_mode)
+        stop_loss, take_profit = trade_target_prices(entry_price, strategy_mode)
         records.append({
             "analysis_date": analysis_date,
             "analysis_time": analysis_time,
@@ -1616,18 +1621,31 @@ def update_trade_tracking_records():
     records = tracking.get("records", [])
     changed = False
 
+    def max_days_for_strategy(strategy_mode, fallback):
+        if "短線" in strategy_mode:
+            return 20
+        if "中線" in strategy_mode:
+            return 60
+        return int(fallback or 20)
+
+    def close_trade_record(record, status, exit_price, exit_date, exit_reason, entry_price):
+        record["status"] = status
+        record["exit_price"] = round(exit_price, 2)
+        record["exit_date"] = exit_date
+        record["exit_reason"] = exit_reason
+        record["return_pct"] = round((exit_price - entry_price) / entry_price * 100, 2)
+
     for record in records:
+        if record.get("status", "holding") != "holding":
+            continue
+
         strategy_mode = str(record.get("strategy_mode", ""))
-        max_tracking_days = int(record.get("max_tracking_days") or (20 if "短線" in strategy_mode else 60))
+        max_tracking_days = max_days_for_strategy(strategy_mode, record.get("max_tracking_days"))
         record["max_tracking_days"] = max_tracking_days
         record.setdefault("exit_date", None)
         record.setdefault("exit_reason", None)
         record.setdefault("tracking_days", 0)
         record.setdefault("source", record.get("來源", "原本TOP10"))
-
-        if record.get("status", "holding") != "holding":
-            changed = True
-            continue
 
         code = str(record.get("股票代號", "")).strip()
         if not code:
@@ -1652,65 +1670,87 @@ def update_trade_tracking_records():
             post_df = price_df[price_df.index > analysis_date.normalize()]
 
             if post_df.empty:
-                changed = True
                 continue
 
             entry_price = float(record.get("entry_price", 0) or 0)
+            if entry_price <= 0:
+                continue
+
             stop_loss = float(record.get("stop_loss", record.get("建議停損", 0)) or 0)
             take_profit = float(record.get("take_profit", record.get("第一停利", 0)) or 0)
             record["stop_loss"] = stop_loss
             record["take_profit"] = take_profit
 
             tracking_df = post_df.head(max_tracking_days)
+            if tracking_df.empty:
+                continue
+
             latest = tracking_df.iloc[-1]
-            latest_close = float(latest["Close"])
+            latest_close = pd.to_numeric(latest.get("Close"), errors="coerce")
+            if pd.isna(latest_close):
+                continue
+            latest_close = float(latest_close)
             record["latest_price"] = round(latest_close, 2)
             record["tracking_days"] = len(tracking_df)
-
-            if entry_price <= 0:
-                record["return_pct"] = 0.0
-                changed = True
-                continue
+            record["tracking_day"] = len(tracking_df)
 
             closed = False
             for trade_date, day in tracking_df.iterrows():
-                high_hit = take_profit > 0 and float(day["High"]) >= take_profit
-                low_hit = stop_loss > 0 and float(day["Low"]) <= stop_loss
+                current_close = pd.to_numeric(day.get("Close"), errors="coerce")
+                if pd.isna(current_close):
+                    continue
 
-                if high_hit and low_hit:
-                    record["status"] = "loss"
-                    record["exit_price"] = round(stop_loss, 2)
-                    record["exit_date"] = trade_date.strftime("%Y-%m-%d")
-                    record["exit_reason"] = "同日停利與停損皆觸發，保守判定停損"
-                    record["return_pct"] = round((stop_loss - entry_price) / entry_price * 100, 2)
+                current_close = float(current_close)
+                current_date = trade_date.strftime("%Y-%m-%d")
+                stop_loss_hit = stop_loss > 0 and current_close <= stop_loss
+                take_profit_hit = take_profit > 0 and current_close >= take_profit
+
+                if stop_loss_hit:
+                    close_trade_record(
+                        record,
+                        "loss",
+                        current_close,
+                        current_date,
+                        "觸發停損",
+                        entry_price,
+                    )
                     closed = True
                     break
 
-                if low_hit:
-                    record["status"] = "loss"
-                    record["exit_price"] = round(stop_loss, 2)
-                    record["exit_date"] = trade_date.strftime("%Y-%m-%d")
-                    record["exit_reason"] = "觸發停損"
-                    record["return_pct"] = round((stop_loss - entry_price) / entry_price * 100, 2)
-                    closed = True
-                    break
-
-                if high_hit:
-                    record["status"] = "win"
-                    record["exit_price"] = round(take_profit, 2)
-                    record["exit_date"] = trade_date.strftime("%Y-%m-%d")
-                    record["exit_reason"] = "觸發第一停利"
-                    record["return_pct"] = round((take_profit - entry_price) / entry_price * 100, 2)
+                if take_profit_hit:
+                    close_trade_record(
+                        record,
+                        "win",
+                        current_close,
+                        current_date,
+                        "觸發第一停利",
+                        entry_price,
+                    )
                     closed = True
                     break
 
             if not closed:
                 record["return_pct"] = round((latest_close - entry_price) / entry_price * 100, 2)
-                if len(post_df) >= max_tracking_days:
-                    record["status"] = "expired"
-                    record["exit_price"] = round(latest_close, 2)
-                    record["exit_date"] = tracking_df.index[-1].strftime("%Y-%m-%d")
-                    record["exit_reason"] = f"超過{max_tracking_days}個交易日未觸發停利/停損"
+                if len(tracking_df) >= max_tracking_days:
+                    expiry_return = record["return_pct"]
+                    if expiry_return > 0:
+                        status = "win"
+                        reason = "到期結案獲利"
+                    elif expiry_return < 0:
+                        status = "loss"
+                        reason = "到期結案虧損"
+                    else:
+                        status = "expired"
+                        reason = "到期結案打平"
+
+                    close_trade_record(
+                        record,
+                        status,
+                        latest_close,
+                        tracking_df.index[-1].strftime("%Y-%m-%d"),
+                        reason,
+                        entry_price,
+                    )
 
             changed = True
         except Exception as exc:
