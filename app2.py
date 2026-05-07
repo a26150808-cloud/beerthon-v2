@@ -1197,7 +1197,7 @@ def run_scan(scan_limit):
     cloud_safe_mode = cloud_safe_mode_enabled()
     requested_scan_limit = int(scan_limit)
     if cloud_safe_mode:
-        scan_limit = min(requested_scan_limit, 100)
+        scan_limit = min(requested_scan_limit, 300)
     else:
         scan_limit = requested_scan_limit
 
@@ -1929,8 +1929,8 @@ with st.sidebar:
 
     cloud_safe_mode = cloud_safe_mode_enabled()
     if cloud_safe_mode:
-        st.warning("Cloud 安全模式：掃描上限已限制為 100。")
-        scan_limit_options = [100]
+        st.warning("Cloud 安全模式：掃描上限已限制為 300。")
+        scan_limit_options = [300]
         scan_limit_format = lambda x: f"{x} 檔（Cloud 安全）"
     else:
         scan_limit_options = [300, 500, 1000]
