@@ -5,6 +5,7 @@ import twstock
 import hashlib
 import requests
 import base64
+import gc
 
 def send_line_message(message):
     token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
@@ -112,6 +113,11 @@ def get_secret_or_env(name, default=None):
         pass
 
     return os.environ.get(name, default)
+
+
+def cloud_safe_mode_enabled():
+    value = str(get_secret_or_env("CLOUD_SAFE_MODE", "")).strip().lower()
+    return value in ("1", "true", "yes", "on")
 
 
 def github_api_settings():
@@ -511,11 +517,12 @@ def get_all_tw_stocks():
 # 資料下載
 # =========================
 
-@st.cache_data(show_spinner=False)
 def download_price_data(symbol):
-    df = yf.download(symbol, period="5y", progress=False, auto_adjust=False)
+    df = yf.download(symbol, period="5y", progress=False, auto_adjust=False, threads=False)
 
     if df.empty or len(df) < 250:
+        del df
+        gc.collect()
         return None
 
     if isinstance(df.columns, pd.MultiIndex):
@@ -540,11 +547,12 @@ def download_price_data(symbol):
     return df.dropna()
 
 
-@st.cache_data(show_spinner=False)
 def get_recent_trading_value(symbol):
-    df = yf.download(symbol, period="5d", progress=False, auto_adjust=False)
+    df = yf.download(symbol, period="5d", progress=False, auto_adjust=False, threads=False)
 
     if df.empty:
+        del df
+        gc.collect()
         return None
 
     if isinstance(df.columns, pd.MultiIndex):
@@ -554,7 +562,10 @@ def get_recent_trading_value(symbol):
     price = float(latest["Close"])
     volume = float(latest["Volume"])
 
-    return price * volume
+    trading_value = price * volume
+    del df
+    gc.collect()
+    return trading_value
 
 
 # =========================
@@ -1167,12 +1178,20 @@ def enrich_result(df):
 
 @st.cache_data(ttl=86400)
 def run_scan(scan_limit):
+    cloud_safe_mode = cloud_safe_mode_enabled()
+    requested_scan_limit = int(scan_limit)
+    if cloud_safe_mode:
+        scan_limit = min(requested_scan_limit, 100)
+    else:
+        scan_limit = requested_scan_limit
+
     stock_pool = get_all_tw_stocks()
     all_items = list(stock_pool.items())
+    prescreen_items = all_items[:300] if cloud_safe_mode else all_items
 
     temp_list = []
 
-    for symbol, info in all_items:
+    for index, (symbol, info) in enumerate(prescreen_items, start=1):
         try:
             trading_value = get_recent_trading_value(symbol)
 
@@ -1184,33 +1203,29 @@ def run_scan(scan_limit):
                 })
         except Exception:
             pass
+        finally:
+            if cloud_safe_mode and index % 50 == 0:
+                gc.collect()
 
     temp_list = sorted(temp_list, key=lambda x: (-x["trading_value"], x["info"]["code"]))
-    selected = temp_list[:int(scan_limit)]
+    selected = temp_list[:scan_limit]
 
     results_by_strategy = {mode: [] for mode in STRATEGY_MODES}
-    price_data_by_symbol = {}
-    financial_data_by_symbol = {}
 
     for item in selected:
+        price_df = None
         try:
             symbol = item["symbol"]
 
-            if symbol not in price_data_by_symbol:
-                price_data_by_symbol[symbol] = download_price_data(symbol)
-
-            price_df = price_data_by_symbol[symbol]
+            price_df = download_price_data(symbol)
             if price_df is None:
                 continue
 
-            if symbol not in financial_data_by_symbol:
-                try:
-                    financial_data_by_symbol[symbol] = get_financial_score(symbol)
-                except Exception as exc:
-                    append_financial_error(symbol, "run_scan", classify_financial_error(exc), exc)
-                    financial_data_by_symbol[symbol] = (0, "財報資料不足")
-
-            financial_data = financial_data_by_symbol[symbol]
+            try:
+                financial_data = get_financial_score(symbol)
+            except Exception as exc:
+                append_financial_error(symbol, "run_scan", classify_financial_error(exc), exc)
+                financial_data = (0, "財報資料不足")
 
             for mode in STRATEGY_MODES:
                 result = analyze_stock(
@@ -1224,6 +1239,11 @@ def run_scan(scan_limit):
                     results_by_strategy[mode].append(result)
         except Exception:
             pass
+        finally:
+            if price_df is not None:
+                del price_df
+            if cloud_safe_mode:
+                gc.collect()
 
     dataframes = {}
 
@@ -1891,10 +1911,19 @@ st.warning("本工具只提供候選股與操作參考，不保證獲利，也�
 with st.sidebar:
     st.header("設定")
 
+    cloud_safe_mode = cloud_safe_mode_enabled()
+    if cloud_safe_mode:
+        st.warning("Cloud 安全模式：掃描上限已限制為 100。")
+        scan_limit_options = [100]
+        scan_limit_format = lambda x: f"{x} 檔（Cloud 安全）"
+    else:
+        scan_limit_options = [300, 500, 1000]
+        scan_limit_format = lambda x: f"{x} 檔（{'快速' if x == 300 else '平衡' if x == 500 else '完整'}）"
+
     scan_limit = st.selectbox(
         "掃描股票數量",
-        options=[300, 500, 1000],
-        format_func=lambda x: f"{x} 檔（{'快速' if x == 300 else '平衡' if x == 500 else '完整'}）",
+        options=scan_limit_options,
+        format_func=scan_limit_format,
         index=0
     )
 
