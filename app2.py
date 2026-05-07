@@ -7,10 +7,39 @@ import requests
 import base64
 import gc
 
-def send_line_message(message):
-    token = st.secrets["LINE_CHANNEL_ACCESS_TOKEN"]
+def get_line_secret(name):
+    try:
+        value = st.secrets.get(name)
+        if value:
+            return value
+    except Exception:
+        pass
+    return None
 
-    url = "https://api.line.me/v2/bot/message/broadcast"
+
+def get_line_target_id():
+    return get_line_secret("LINE_TARGET_ID") or get_line_secret("LINE_GROUP_ID")
+
+
+def send_line_message_response(message):
+    token = get_line_secret("LINE_CHANNEL_ACCESS_TOKEN")
+    target_id = get_line_target_id()
+
+    if not token:
+        return {
+            "status": None,
+            "ok": False,
+            "error": "缺少 LINE_CHANNEL_ACCESS_TOKEN，無法發送 LINE。",
+        }
+
+    if not target_id:
+        return {
+            "status": None,
+            "ok": False,
+            "error": "缺少 LINE_TARGET_ID 或 LINE_GROUP_ID，無法發送 LINE Push 訊息。",
+        }
+
+    url = "https://api.line.me/v2/bot/message/push"
 
     headers = {
         "Authorization": f"Bearer {token}",
@@ -18,6 +47,7 @@ def send_line_message(message):
     }
 
     data = {
+        "to": target_id,
         "messages": [
             {
                 "type": "text",
@@ -26,8 +56,31 @@ def send_line_message(message):
         ]
     }
 
-    r = requests.post(url, headers=headers, json=data)
-    return r.status_code
+    try:
+        r = requests.post(url, headers=headers, json=data, timeout=30)
+    except requests.RequestException as exc:
+        return {
+            "status": None,
+            "ok": False,
+            "error": f"LINE API 連線失敗：{exc}",
+        }
+
+    if r.status_code != 200:
+        return {
+            "status": r.status_code,
+            "ok": False,
+            "error": f"LINE Push 發送失敗：HTTP {r.status_code} {r.text[:200]}",
+        }
+
+    return {
+        "status": r.status_code,
+        "ok": True,
+        "error": "",
+    }
+
+
+def send_line_message(message):
+    return send_line_message_response(message)["status"]
 import json
 import os
 import uuid
@@ -1830,11 +1883,12 @@ def send_official_line_after_manual_refresh():
         save_line_log(log)
         return f"正式 LINE 未發送：{reason}"
 
-    status = send_line_message(msg)
+    line_result = send_line_message_response(msg)
+    status = line_result["status"]
     log["last_checked_at"] = format_taipei_dt(now)
     log["last_official_status"] = status
 
-    if status == 200:
+    if line_result["ok"]:
         log["last_official_sent_date"] = today
         log["last_official_sent_at"] = format_taipei_dt(now)
         save_line_log(log)
@@ -1842,8 +1896,9 @@ def send_official_line_after_manual_refresh():
 
     log["last_failed_date"] = today
     log["last_failed_status"] = status
+    log["last_failed_reason"] = line_result["error"]
     save_line_log(log)
-    return f"正式 LINE 發送失敗：{status}"
+    return line_result["error"]
 
 
 def maybe_send_scheduled_line():
@@ -2080,19 +2135,21 @@ if st.session_state.get("admin_ok") == True:
             test_message += f"正式通知內容目前無法產生：{line_reason}\n"
             test_message += build_low_price_line_section()
 
-        status = send_line_message(test_message)
+        line_result = send_line_message_response(test_message)
+        status = line_result["status"]
         test_log = load_line_test_log()
         test_log.setdefault("tests", []).append({
             "time": format_taipei_dt(),
-            "status": status
+            "status": status,
+            "error": line_result["error"],
         })
         test_log["tests"] = test_log["tests"][-100:]
         save_line_test_log(test_log)
 
-        if status == 200:
+        if line_result["ok"]:
             st.success("LINE測試發送成功，不會影響正式發送狀態")
         else:
-            st.error(f"測試發送失敗：{status}")
+            st.error(line_result["error"])
 
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
 st.caption(f"目前顯示策略：{display_strategy}。一般瀏覽只讀取已儲存結果，不會重新抓資料。")
