@@ -1386,9 +1386,12 @@ def records_to_dataframe(records):
 
 
 def build_analysis_result_payload(dfs_by_strategy, liquidity_count, selected_count, analysis_time, scan_limit):
+    saved_at = format_taipei_dt()
     return {
         "analysis_time": analysis_time,
-        "saved_at": format_taipei_dt(),
+        "saved_at": saved_at,
+        "last_updated": saved_at,
+        "generated_at": analysis_time,
         "scan_limit": int(scan_limit),
         "liquidity_count": int(liquidity_count),
         "selected_count": int(selected_count),
@@ -1928,48 +1931,94 @@ def show_github_persist_result(result):
             st.error(f"GitHub 寫回失敗：{item['path']}：{item['reason']}")
 
 
+def verify_analysis_result_saved(expected_payload):
+    if not os.path.exists(ANALYSIS_RESULT_FILE):
+        return False, "analysis_result.json 未成功更新"
+
+    saved_payload = safe_load_json(ANALYSIS_RESULT_FILE, {})
+    expected_time = expected_payload.get("analysis_time")
+    expected_saved_at = expected_payload.get("saved_at")
+
+    saved_time = saved_payload.get("analysis_time")
+    saved_last_updated = saved_payload.get("last_updated")
+    saved_generated_at = saved_payload.get("generated_at")
+    saved_saved_at = saved_payload.get("saved_at")
+
+    if saved_time != expected_time:
+        return False, "analysis_result.json 未成功更新"
+    if saved_generated_at != expected_time:
+        return False, "analysis_result.json 未成功更新"
+    if saved_last_updated != expected_saved_at and saved_saved_at != expected_saved_at:
+        return False, "analysis_result.json 未成功更新"
+
+    return True, None
+
+
 def perform_manual_refresh(scan_limit):
-    st.cache_data.clear()
-    dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
+    try:
+        st.info("開始刷新")
+        st.cache_data.clear()
+        dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
+        st.info("run_scan 完成")
 
-    payload = build_analysis_result_payload(
-        dfs_by_strategy,
-        liquidity_count,
-        selected_count,
-        analysis_time,
-        scan_limit,
-    )
-    save_analysis_result(payload)
+        payload = build_analysis_result_payload(
+            dfs_by_strategy,
+            liquidity_count,
+            selected_count,
+            analysis_time,
+            scan_limit,
+        )
+        save_analysis_result(payload)
 
-    analysis_log = load_analysis_log()
-    analysis_log["last_analysis_time"] = analysis_time
-    save_analysis_log(analysis_log)
+        saved_ok, saved_error = verify_analysis_result_saved(payload)
+        if not saved_ok:
+            st.error(saved_error)
+            raise RuntimeError(saved_error)
+        st.info("analysis_result.json 已寫入")
+        st.info(f"本次分析完成時間：{analysis_time}")
 
-    for mode, mode_df in dfs_by_strategy.items():
-        if not mode_df.empty:
-            mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
-            mode_low_price_top10 = get_low_price_top10(mode_df)
+        analysis_log = load_analysis_log()
+        analysis_log["last_analysis_time"] = analysis_time
+        save_analysis_log(analysis_log)
 
-            record_top10_history(
-                TOP10_HISTORY_FILE,
-                analysis_time,
-                mode,
-                mode_top10
-            )
-            record_top10_history(
-                LOW_PRICE_TOP10_HISTORY_FILE,
-                analysis_time,
-                mode,
-                mode_low_price_top10
-            )
-            record_trade_candidates(analysis_time, mode, mode_top10, "原本TOP10")
-            record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
+        for mode, mode_df in dfs_by_strategy.items():
+            if not mode_df.empty:
+                mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
+                mode_low_price_top10 = get_low_price_top10(mode_df)
 
-    trade_tracking = update_trade_tracking_records()
-    line_status_text = send_official_line_after_manual_refresh()
-    github_persist_result = persist_runtime_json_files_to_github()
+                record_top10_history(
+                    TOP10_HISTORY_FILE,
+                    analysis_time,
+                    mode,
+                    mode_top10
+                )
+                record_top10_history(
+                    LOW_PRICE_TOP10_HISTORY_FILE,
+                    analysis_time,
+                    mode,
+                    mode_low_price_top10
+                )
+                record_trade_candidates(analysis_time, mode, mode_top10, "原本TOP10")
+                record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
 
-    return payload, trade_tracking, line_status_text, github_persist_result
+        trade_tracking = update_trade_tracking_records()
+
+        try:
+            line_status_text = send_official_line_after_manual_refresh()
+        except Exception as exc:
+            line_status_text = f"LINE 發送失敗，但資料刷新已完成：{exc}"
+            st.warning(line_status_text)
+
+        try:
+            github_persist_result = persist_runtime_json_files_to_github()
+        except Exception as exc:
+            github_persist_result = {"success": [], "failed": [{"path": "GitHub", "reason": str(exc)}], "skipped": [], "missing_config": []}
+            st.warning(f"GitHub 寫回失敗，但本機 analysis_result.json 已更新：{exc}")
+
+        return payload, trade_tracking, line_status_text, github_persist_result
+    except Exception as exc:
+        st.error(f"手動刷新失敗：{exc}")
+        raise
 
 
 # =========================
@@ -2012,8 +2061,9 @@ with st.sidebar:
                 _, _, refresh_line_status, github_persist_result = perform_manual_refresh(scan_limit)
             st.session_state["manual_refresh_line_status"] = refresh_line_status
             st.session_state["github_persist_result"] = github_persist_result
-            st.success("今日資料已手動刷新並儲存。")
+            st.success("手動刷新完成")
             show_github_persist_result(github_persist_result)
+            st.rerun()
         else:
             show_github_persist_result(st.session_state.get("github_persist_result"))
     else:
