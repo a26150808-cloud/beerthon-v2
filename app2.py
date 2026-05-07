@@ -1203,7 +1203,7 @@ def run_scan(scan_limit):
 
     stock_pool = get_all_tw_stocks()
     all_items = list(stock_pool.items())
-    prescreen_items = all_items[:300] if cloud_safe_mode else all_items
+    prescreen_items = all_items
 
     temp_list = []
 
