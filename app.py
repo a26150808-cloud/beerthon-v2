@@ -307,6 +307,19 @@ def load_analysis_result():
     return safe_load_json(ANALYSIS_RESULT_FILE, {})
 
 
+def load_analysis_result_checked():
+    if not os.path.exists(ANALYSIS_RESULT_FILE):
+        return {}, None, False
+
+    try:
+        with open(ANALYSIS_RESULT_FILE, "r", encoding="utf-8") as f:
+            return json.load(f), None, True
+    except json.JSONDecodeError as exc:
+        return {}, f"analysis_result.json 格式錯誤：{exc}", True
+    except OSError as exc:
+        return {}, f"analysis_result.json 讀取失敗：{exc}", True
+
+
 def save_analysis_result(data):
     safe_save_json(ANALYSIS_RESULT_FILE, data)
 
@@ -2044,10 +2057,13 @@ with st.sidebar:
 
 st.subheader("🔥 今日 Top 10 推薦")
 
-analysis_result = load_analysis_result()
+analysis_result, analysis_result_error, analysis_result_exists = load_analysis_result_checked()
 dfs_by_strategy, liquidity_count, selected_count, analysis_time = parse_analysis_result_payload(analysis_result)
 trade_tracking = load_trade_tracking()
 line_status_text = st.session_state.pop("manual_refresh_line_status", maybe_send_scheduled_line())
+
+if analysis_result_error:
+    st.error(analysis_result_error)
 
 st.caption(f"📅 上次分析完成時間：{analysis_time}")
 
@@ -2081,7 +2097,12 @@ st.info(line_status_text)
 
 
 if df.empty:
-    st.info("目前沒有符合資料。可切換策略、調整掃描數量，或手動刷新。")
+    if analysis_result_error:
+        st.info("分析結果讀取失敗，請管理員手動刷新。")
+    elif not analysis_result_exists:
+        st.info("尚未由管理員更新資料")
+    else:
+        st.info("目前沒有符合資料。可切換策略、調整掃描數量，或手動刷新。")
 else:
     st.success(f"流動性合格 {liquidity_count} 檔，分析成交金額前 {selected_count} 檔。")
 
