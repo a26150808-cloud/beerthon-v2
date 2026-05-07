@@ -229,6 +229,16 @@ def persist_runtime_json_files_to_github():
         "missing_config": [],
     }
 
+    disable_on_cloud = str(
+        get_secret_or_env("DISABLE_GITHUB_PERSIST_ON_CLOUD", "false")
+    ).strip().lower()
+    if disable_on_cloud == "true":
+        result["skipped"].append({
+            "path": "GitHub JSON 寫回",
+            "reason": "DISABLE_GITHUB_PERSIST_ON_CLOUD=true，已略過避免 Cloud 重新部署循環",
+        })
+        return result
+
     settings = github_api_settings()
     missing = [name for name, value in {
         "GITHUB_TOKEN": settings["token"],
