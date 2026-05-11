@@ -112,6 +112,11 @@ VISITOR_STATS_FILE = "visitor_stats.json"
 GITHUB_PERSIST_FILES = [
     TRADE_TRACKING_FILE,
 ]
+MANUAL_GITHUB_SAVE_FILES = [
+    ANALYSIS_RESULT_FILE,
+    TOP10_HISTORY_FILE,
+    TRADE_TRACKING_FILE,
+]
 TAIPEI_TZ = ZoneInfo("Asia/Taipei")
 STRATEGY_MODES = ["短線（強勢突破）", "中線（趨勢穩定）"]
 LEVEL_RANK = {"S級": 0, "A級": 1, "B級": 2, "C級": 3, "D級": 4}
@@ -177,6 +182,10 @@ def trade_tracking_github_persist_enabled():
     return secret_flag_enabled("ENABLE_TRADE_TRACKING_GITHUB_PERSIST")
 
 
+def disable_github_persist_on_cloud_enabled():
+    return secret_flag_enabled("DISABLE_GITHUB_PERSIST_ON_CLOUD")
+
+
 def github_api_settings():
     return {
         "token": get_secret_or_env("GITHUB_TOKEN"),
@@ -226,9 +235,11 @@ def github_get_file_sha(path):
     return response.json().get("sha"), None
 
 
-def github_update_file(path, commit_message):
-    if path != TRADE_TRACKING_FILE:
-        return False, f"不允許寫回 {path}；目前僅允許 {TRADE_TRACKING_FILE}"
+def github_update_file(path, commit_message, allowed_paths=None):
+    if allowed_paths is None:
+        allowed_paths = [TRADE_TRACKING_FILE]
+    if path not in allowed_paths:
+        return False, f"不允許寫回 {path}；目前僅允許 {'、'.join(allowed_paths)}"
 
     settings = github_api_settings()
     token = settings["token"]
@@ -284,6 +295,8 @@ def github_update_file(path, commit_message):
 def persist_runtime_json_files_to_github():
     if not trade_tracking_github_persist_enabled():
         return False
+    # 保留舊的全域雲端寫回開關；trade_tracking 另由 ENABLE_TRADE_TRACKING_GITHUB_PERSIST 明確控制。
+    disable_github_persist_on_cloud_enabled()
 
     result = {
         "success": [],
@@ -308,6 +321,42 @@ def persist_runtime_json_files_to_github():
             continue
 
         ok, reason = github_update_file(path, "Persist runtime tracking data")
+        if ok:
+            result["success"].append(path)
+        else:
+            result["failed"].append({"path": path, "reason": reason or "未知錯誤"})
+
+    return result
+
+
+def manual_save_current_results_to_github():
+    result = {
+        "success": [],
+        "failed": [],
+        "skipped": [],
+        "missing_config": [],
+    }
+
+    settings = github_api_settings()
+    missing = [name for name, value in {
+        "GITHUB_TOKEN": settings["token"],
+        "GITHUB_REPO": settings["repo"],
+        "GITHUB_BRANCH": settings["branch"],
+    }.items() if not value]
+    if missing:
+        result["missing_config"] = missing
+        return result
+
+    for path in MANUAL_GITHUB_SAVE_FILES:
+        if not os.path.exists(path):
+            result["skipped"].append({"path": path, "reason": "本地檔案不存在"})
+            continue
+
+        ok, reason = github_update_file(
+            path,
+            "Manual save current analysis results",
+            allowed_paths=MANUAL_GITHUB_SAVE_FILES,
+        )
         if ok:
             result["success"].append(path)
         else:
@@ -1947,6 +1996,35 @@ def show_github_persist_result(result):
             st.warning(f"GitHub 寫回失敗：{item['path']}：{item['reason']}")
 
 
+def show_manual_github_save_result(result):
+    if not result:
+        return
+
+    missing_config = result.get("missing_config", [])
+    if missing_config:
+        st.warning(f"GitHub 手動保存未執行，缺少設定：{', '.join(missing_config)}")
+        return
+
+    success = result.get("success", [])
+    failed = result.get("failed", [])
+    skipped = result.get("skipped", [])
+
+    if set(success) == set(MANUAL_GITHUB_SAVE_FILES):
+        st.success("已手動保存 analysis_result.json / top10_history.json / trade_tracking.json 到 GitHub")
+
+    for path in MANUAL_GITHUB_SAVE_FILES:
+        if path in success:
+            st.success(f"{path} 手動保存成功")
+
+    if skipped:
+        for item in skipped:
+            st.warning(f"{item['path']} 手動保存略過：{item['reason']}")
+
+    if failed:
+        for item in failed:
+            st.warning(f"{item['path']} 手動保存失敗：{item['reason']}")
+
+
 def verify_analysis_result_saved(expected_payload):
     if not os.path.exists(ANALYSIS_RESULT_FILE):
         return False, "analysis_result.json 未成功更新"
@@ -2080,8 +2158,23 @@ with st.sidebar:
             st.success("手動刷新完成")
             show_github_persist_result(github_persist_result)
             st.rerun()
+
+        if st.button("💾 手動保存目前結果到 GitHub"):
+            with st.spinner("正在手動保存目前結果到 GitHub。"):
+                try:
+                    manual_github_save_result = manual_save_current_results_to_github()
+                except Exception as exc:
+                    manual_github_save_result = {
+                        "success": [],
+                        "failed": [{"path": "GitHub", "reason": str(exc)}],
+                        "skipped": [],
+                        "missing_config": [],
+                    }
+            st.session_state["manual_github_save_result"] = manual_github_save_result
+            show_manual_github_save_result(manual_github_save_result)
         else:
             show_github_persist_result(st.session_state.get("github_persist_result"))
+            show_manual_github_save_result(st.session_state.get("manual_github_save_result"))
     else:
         st.info("資料由管理員於每日 16:00～18:00 手動更新。")
 
