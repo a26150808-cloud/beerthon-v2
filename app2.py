@@ -235,6 +235,42 @@ def github_get_file_sha(path):
     return response.json().get("sha"), None
 
 
+def github_load_json_file(path):
+    settings = github_api_settings()
+    token = settings["token"]
+    repo = settings["repo"]
+    branch = settings["branch"]
+
+    missing = [name for name, value in {
+        "GITHUB_TOKEN": token,
+        "GITHUB_REPO": repo,
+        "GITHUB_BRANCH": branch,
+    }.items() if not value]
+    if missing:
+        return None, f"缺少 GitHub 設定：{', '.join(missing)}"
+
+    url = f"https://api.github.com/repos/{repo}/contents/{path}"
+    try:
+        response = requests.get(
+            url,
+            headers=github_api_headers(token),
+            params={"ref": branch},
+            timeout=20,
+        )
+    except requests.RequestException as exc:
+        return None, f"GitHub API 讀取失敗：{exc}"
+
+    if response.status_code >= 400:
+        return None, f"GitHub API 讀取失敗：HTTP {response.status_code} {response.text[:200]}"
+
+    try:
+        content = response.json().get("content", "")
+        decoded = base64.b64decode(content).decode("utf-8")
+        return json.loads(decoded), None
+    except (ValueError, json.JSONDecodeError) as exc:
+        return None, f"GitHub JSON 解析失敗：{exc}"
+
+
 def github_update_file(path, commit_message, allowed_paths=None):
     if allowed_paths is None:
         allowed_paths = [TRADE_TRACKING_FILE]
@@ -329,13 +365,33 @@ def persist_runtime_json_files_to_github():
     return result
 
 
-def manual_save_current_results_to_github():
+def analysis_payload_time(payload):
+    if not isinstance(payload, dict):
+        return None
+    return payload.get("analysis_time") or payload.get("generated_at") or payload.get("last_updated")
+
+
+def is_stale_analysis_time(analysis_time):
+    return str(analysis_time or "").startswith("2026-05-05")
+
+
+def manual_save_current_results_to_github(analysis_payload, top10_history, trade_tracking):
     result = {
         "success": [],
         "failed": [],
         "skipped": [],
         "missing_config": [],
+        "analysis_time": analysis_payload_time(analysis_payload),
+        "verification": None,
     }
+
+    if not analysis_payload or not top10_history or not trade_tracking:
+        result["failed"].append({"path": "session_state", "reason": "請先按手動刷新今日資料，再手動保存到 GitHub"})
+        return result
+
+    if is_stale_analysis_time(result["analysis_time"]):
+        result["failed"].append({"path": ANALYSIS_RESULT_FILE, "reason": "分析時間是 2026-05-05，已停止保存"})
+        return result
 
     settings = github_api_settings()
     missing = [name for name, value in {
@@ -347,10 +403,14 @@ def manual_save_current_results_to_github():
         result["missing_config"] = missing
         return result
 
+    payload_by_path = {
+        ANALYSIS_RESULT_FILE: analysis_payload,
+        TOP10_HISTORY_FILE: top10_history,
+        TRADE_TRACKING_FILE: trade_tracking,
+    }
+
     for path in MANUAL_GITHUB_SAVE_FILES:
-        if not os.path.exists(path):
-            result["skipped"].append({"path": path, "reason": "本地檔案不存在"})
-            continue
+        safe_save_json(path, payload_by_path[path])
 
         ok, reason = github_update_file(
             path,
@@ -361,6 +421,20 @@ def manual_save_current_results_to_github():
             result["success"].append(path)
         else:
             result["failed"].append({"path": path, "reason": reason or "未知錯誤"})
+
+    if ANALYSIS_RESULT_FILE in result["success"]:
+        github_payload, verify_error = github_load_json_file(ANALYSIS_RESULT_FILE)
+        github_analysis_time = analysis_payload_time(github_payload)
+        if verify_error:
+            result["verification"] = {"ok": False, "reason": verify_error, "analysis_time": github_analysis_time}
+        elif is_stale_analysis_time(github_analysis_time):
+            result["verification"] = {
+                "ok": False,
+                "reason": "GitHub 上的 analysis_result.json 仍是 2026-05-05",
+                "analysis_time": github_analysis_time,
+            }
+        else:
+            result["verification"] = {"ok": True, "reason": None, "analysis_time": github_analysis_time}
 
     return result
 
@@ -2024,6 +2098,14 @@ def show_manual_github_save_result(result):
         for item in failed:
             st.warning(f"{item['path']} 手動保存失敗：{item['reason']}")
 
+    verification = result.get("verification")
+    if verification:
+        verify_time = verification.get("analysis_time") or "未知"
+        if verification.get("ok"):
+            st.success(f"GitHub analysis_result.json 已確認，分析時間：{verify_time}")
+        else:
+            st.warning(f"GitHub analysis_result.json 確認失敗：{verification.get('reason')}（分析時間：{verify_time}）")
+
 
 def verify_analysis_result_saved(expected_payload):
     if not os.path.exists(ANALYSIS_RESULT_FILE):
@@ -2096,6 +2178,9 @@ def perform_manual_refresh(scan_limit):
                 record_trade_candidates(analysis_time, mode, mode_low_price_top10, "低價股TOP10")
 
         trade_tracking = update_trade_tracking_records()
+        st.session_state["latest_analysis_payload"] = payload
+        st.session_state["latest_top10_history"] = load_top10_history(TOP10_HISTORY_FILE)
+        st.session_state["latest_trade_tracking"] = trade_tracking
 
         try:
             line_status_text = send_official_line_after_manual_refresh()
@@ -2162,7 +2247,25 @@ with st.sidebar:
         if st.button("💾 手動保存目前結果到 GitHub"):
             with st.spinner("正在手動保存目前結果到 GitHub。"):
                 try:
-                    manual_github_save_result = manual_save_current_results_to_github()
+                    latest_analysis_payload = st.session_state.get("latest_analysis_payload")
+                    latest_top10_history = st.session_state.get("latest_top10_history")
+                    latest_trade_tracking = st.session_state.get("latest_trade_tracking")
+                    save_analysis_time = analysis_payload_time(latest_analysis_payload)
+
+                    if not latest_analysis_payload or not latest_top10_history or not latest_trade_tracking:
+                        st.warning("請先按手動刷新今日資料，再手動保存到 GitHub")
+                        manual_github_save_result = None
+                    elif is_stale_analysis_time(save_analysis_time):
+                        st.warning(f"即將保存分析時間：{save_analysis_time}")
+                        st.warning("分析時間是 2026-05-05，已停止保存")
+                        manual_github_save_result = None
+                    else:
+                        st.info(f"即將保存分析時間：{save_analysis_time}")
+                        manual_github_save_result = manual_save_current_results_to_github(
+                            latest_analysis_payload,
+                            latest_top10_history,
+                            latest_trade_tracking,
+                        )
                 except Exception as exc:
                     manual_github_save_result = {
                         "success": [],
@@ -2170,8 +2273,9 @@ with st.sidebar:
                         "skipped": [],
                         "missing_config": [],
                     }
-            st.session_state["manual_github_save_result"] = manual_github_save_result
-            show_manual_github_save_result(manual_github_save_result)
+            if manual_github_save_result:
+                st.session_state["manual_github_save_result"] = manual_github_save_result
+                show_manual_github_save_result(manual_github_save_result)
         else:
             show_github_persist_result(st.session_state.get("github_persist_result"))
             show_manual_github_save_result(st.session_state.get("manual_github_save_result"))
