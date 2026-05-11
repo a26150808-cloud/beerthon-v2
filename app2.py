@@ -111,11 +111,6 @@ TRADE_TRACKING_FILE = "trade_tracking.json"
 VISITOR_STATS_FILE = "visitor_stats.json"
 GITHUB_PERSIST_FILES = [
     TRADE_TRACKING_FILE,
-    ANALYSIS_RESULT_FILE,
-    ANALYSIS_LOG_FILE,
-    TOP10_HISTORY_FILE,
-    LOW_PRICE_TOP10_HISTORY_FILE,
-    LINE_LOG_FILE,
 ]
 TAIPEI_TZ = ZoneInfo("Asia/Taipei")
 STRATEGY_MODES = ["短線（強勢突破）", "中線（趨勢穩定）"]
@@ -173,6 +168,15 @@ def cloud_safe_mode_enabled():
     return value in ("1", "true", "yes", "on")
 
 
+def secret_flag_enabled(name, default="false"):
+    value = str(get_secret_or_env(name, default)).strip().lower()
+    return value in ("1", "true", "yes", "on")
+
+
+def trade_tracking_github_persist_enabled():
+    return secret_flag_enabled("ENABLE_TRADE_TRACKING_GITHUB_PERSIST")
+
+
 def github_api_settings():
     return {
         "token": get_secret_or_env("GITHUB_TOKEN"),
@@ -223,6 +227,9 @@ def github_get_file_sha(path):
 
 
 def github_update_file(path, commit_message):
+    if path != TRADE_TRACKING_FILE:
+        return False, f"不允許寫回 {path}；目前僅允許 {TRADE_TRACKING_FILE}"
+
     settings = github_api_settings()
     token = settings["token"]
     repo = settings["repo"]
@@ -275,7 +282,7 @@ def github_update_file(path, commit_message):
 
 
 def persist_runtime_json_files_to_github():
-    if str(st.secrets.get("DISABLE_GITHUB_PERSIST_ON_CLOUD", "false")).lower() == "true":
+    if not trade_tracking_github_persist_enabled():
         return False
 
     result = {
@@ -704,8 +711,12 @@ def backtest(df, years=3, strategy_mode="短線（強勢突破）"):
     for i in range(60, len(test_df) - 20):
         if is_signal(test_df, i, strategy_mode):
             entry = float(test_df.iloc[i]["Close"])
-            stop_loss = entry * 0.93
-            take_profit = entry * 1.10
+            if strategy_mode == "中線（趨勢穩定）":
+                stop_loss = entry * 0.88
+                take_profit = entry * 1.18
+            else:
+                stop_loss = entry * 0.93
+                take_profit = entry * 1.10
 
             for j in range(i + 1, min(i + 21, len(test_df))):
                 low = float(test_df.iloc[j]["Low"])
@@ -1006,11 +1017,16 @@ def analyze_stock(symbol, info, strategy_mode, df=None, financial_data=None):
     recent_low = float(df["Low"].tail(20).min())
     ma20 = float(latest["MA20"])
 
-    stop_loss = max(close * 0.93, ma20 * 0.98, recent_low * 0.98)
-    if stop_loss >= close:
-        stop_loss = close * 0.93
-    tp1 = close * 1.10
-    tp2 = close * 1.20
+    if strategy_mode == "中線（趨勢穩定）":
+        stop_loss = close * 0.88
+        tp1 = close * 1.18
+        tp2 = close * 1.20
+    else:
+        stop_loss = max(close * 0.93, ma20 * 0.98, recent_low * 0.98)
+        if stop_loss >= close:
+            stop_loss = close * 0.93
+        tp1 = close * 1.10
+        tp2 = close * 1.20
 
     return {
         "策略模式": strategy_mode,
@@ -1928,7 +1944,7 @@ def show_github_persist_result(result):
         st.warning("略過 GitHub 寫回：" + skipped_text)
     if failed:
         for item in failed:
-            st.error(f"GitHub 寫回失敗：{item['path']}：{item['reason']}")
+            st.warning(f"GitHub 寫回失敗：{item['path']}：{item['reason']}")
 
 
 def verify_analysis_result_saved(expected_payload):
@@ -2013,7 +2029,7 @@ def perform_manual_refresh(scan_limit):
             github_persist_result = persist_runtime_json_files_to_github()
         except Exception as exc:
             github_persist_result = {"success": [], "failed": [{"path": "GitHub", "reason": str(exc)}], "skipped": [], "missing_config": []}
-            st.warning(f"GitHub 寫回失敗，但本機 analysis_result.json 已更新：{exc}")
+            st.warning(f"GitHub 寫回失敗，但本機 trade_tracking.json 已更新：{exc}")
 
         return payload, trade_tracking, line_status_text, github_persist_result
     except Exception as exc:
