@@ -1980,7 +1980,24 @@ def build_trade_tracking_display_df(records):
     return display_df.astype("object").where(pd.notna(display_df), "")
 
 
-def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
+def dataframe_to_history_items(top_df):
+    if top_df is None or top_df.empty:
+        return []
+
+    items = []
+    for rank, (_, row) in enumerate(top_df.head(10).iterrows(), start=1):
+        items.append({
+            "rank": rank,
+            "股票代號": str(row["股票代號"]),
+            "股票名稱": row["股票名稱"],
+        })
+    return items
+
+
+def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5, current_top_df=None, current_analysis_time=None):
+    if current_top_df is not None and current_top_df.empty:
+        return pd.DataFrame()
+
     history = load_top10_history(path)
     records = [
         r for r in history.get("records", [])
@@ -1988,23 +2005,45 @@ def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
     ]
 
     latest_by_date = {}
-    for record in records:
+    for record in sorted(records, key=lambda r: r.get("analysis_time", "")):
         latest_by_date[record["analysis_date"]] = record
 
-    dates = sorted(latest_by_date.keys(), reverse=True)
+    current_date = None
+    if current_top_df is not None and not current_top_df.empty:
+        current_date = str(current_analysis_time or "")[:10]
+        if not current_date:
+            current_date = today_taipei()
+        latest_by_date[current_date] = {
+            "analysis_date": current_date,
+            "analysis_time": current_analysis_time or current_date,
+            "strategy_mode": strategy_mode,
+            "items": dataframe_to_history_items(current_top_df),
+        }
+
+    if current_date:
+        dates = [current_date] + sorted(
+            [date for date in latest_by_date.keys() if date < current_date],
+            reverse=True,
+        )
+    else:
+        dates = sorted(latest_by_date.keys(), reverse=True)
     if not dates:
         return pd.DataFrame()
 
     latest_record = latest_by_date[dates[0]]
+    current_codes = {str(item["股票代號"]) for item in latest_record["items"]}
     rows = []
 
     for item in latest_record["items"]:
-        code = item["股票代號"]
+        code = str(item["股票代號"])
+        if code not in current_codes:
+            continue
+
         streak = 0
 
         for date in dates:
             record = latest_by_date[date]
-            codes = {x["股票代號"] for x in record["items"]}
+            codes = {str(x["股票代號"]) for x in record["items"]}
             if code in codes:
                 streak += 1
             else:
@@ -2553,8 +2592,13 @@ else:
             hide_index=True
         )
 
-    consecutive_low_price = get_consecutive_top10(LOW_PRICE_TOP10_HISTORY_FILE, display_strategy)
-    st.subheader("連續 3 天以上進入低價股 TOP10 的股票")
+    consecutive_low_price = get_consecutive_top10(
+        LOW_PRICE_TOP10_HISTORY_FILE,
+        display_strategy,
+        current_top_df=low_price_top10,
+        current_analysis_time=analysis_time,
+    )
+    st.subheader("目前連續 3 天以上進入低價股 TOP10")
     if consecutive_low_price.empty:
         st.info("目前無連續 3 天以上進入低價股 TOP10 的股票")
     else:
