@@ -1571,6 +1571,96 @@ def get_low_price_top10(df):
     )
 
 
+def get_session_value(key, default=None):
+    try:
+        return st.session_state.get(key, default)
+    except Exception:
+        return default
+
+
+def normalize_line_low_price_source(data, strategy_mode=None):
+    if isinstance(data, pd.DataFrame):
+        return data.copy()
+
+    if isinstance(data, dict):
+        selected = None
+        if strategy_mode and strategy_mode in data:
+            selected = data.get(strategy_mode)
+        elif data:
+            selected = next(iter(data.values()))
+
+        if isinstance(selected, pd.DataFrame):
+            return selected.copy()
+        if isinstance(selected, list):
+            return records_to_dataframe(selected)
+
+    if isinstance(data, list):
+        return records_to_dataframe(data)
+
+    return pd.DataFrame()
+
+
+def get_latest_analysis_payload_for_line():
+    for key in ("latest_analysis_payload", "analysis_result", "latest_result"):
+        payload = get_session_value(key)
+        if isinstance(payload, dict) and payload.get("strategies"):
+            return payload, f"st.session_state.{key}"
+
+    payload = load_analysis_result()
+    if isinstance(payload, dict) and payload.get("strategies"):
+        return payload, ANALYSIS_RESULT_FILE
+
+    return {}, None
+
+
+def get_latest_low_price_top10_for_line(strategy_mode=None):
+    payload, source = get_latest_analysis_payload_for_line()
+    if payload:
+        dfs_by_strategy, _, _, analysis_time = parse_analysis_result_payload(payload)
+        mode = strategy_mode if strategy_mode in dfs_by_strategy else None
+        if mode is None:
+            mode = next((m for m in STRATEGY_MODES if not dfs_by_strategy.get(m, pd.DataFrame()).empty), strategy_mode)
+        low_price_df = get_low_price_top10(dfs_by_strategy.get(mode, pd.DataFrame()))
+        return low_price_df, {
+            "analysis_time": analysis_time,
+            "analysis_date": str(analysis_time or "")[:10],
+            "strategy_mode": mode or strategy_mode,
+            "source": source,
+        }
+
+    session_low_price = get_session_value("low_price_top10")
+    low_price_df = normalize_line_low_price_source(session_low_price, strategy_mode)
+    if not low_price_df.empty:
+        analysis_time = (
+            get_session_value("analysis_time")
+            or get_session_value("latest_analysis_time")
+            or format_taipei_dt()
+        )
+        return low_price_df, {
+            "analysis_time": analysis_time,
+            "analysis_date": str(analysis_time or "")[:10],
+            "strategy_mode": strategy_mode,
+            "source": "st.session_state.low_price_top10",
+        }
+
+    return pd.DataFrame(), {
+        "analysis_time": None,
+        "analysis_date": None,
+        "strategy_mode": strategy_mode,
+        "source": None,
+    }
+
+
+def remember_line_low_price_warning(warning):
+    try:
+        if warning:
+            st.session_state["line_low_price_top10_warning"] = warning
+        else:
+            st.session_state.pop("line_low_price_top10_warning", None)
+    except Exception:
+        pass
+
+
 def record_top10_history(path, analysis_time, strategy_mode, top_df):
     if top_df.empty:
         return
@@ -1934,41 +2024,42 @@ def get_consecutive_top10(path, strategy_mode, min_days=3, limit=5):
     ).head(limit).reset_index(drop=True) if rows else pd.DataFrame()
 
 
-def build_low_price_line_section(strategy_mode=None):
-    history = load_top10_history(LOW_PRICE_TOP10_HISTORY_FILE)
-    records = [
-        r for r in history.get("records", [])
-        if r.get("items") and (strategy_mode is None or r.get("strategy_mode") == strategy_mode)
-    ]
+def build_low_price_line_section(strategy_mode=None, expected_analysis_time=None, return_meta=False):
+    low_price_top10, meta = get_latest_low_price_top10_for_line(strategy_mode)
+    source_time = meta.get("analysis_time") or "未記錄"
+    source_date = meta.get("analysis_date")
+    expected_date = str(expected_analysis_time or "")[:10]
+    warning = None
 
-    if not records and strategy_mode is not None:
-        records = [r for r in history.get("records", []) if r.get("items")]
+    section = (
+        "\n【低價股 TOP10（股價低於60元）】\n"
+        f"資料來源時間：{source_time}\n"
+    )
 
-    section = "\n【低價股 TOP5（股價低於60元）】\n"
+    if expected_date and source_date and source_date != expected_date:
+        warning = (
+            f"LINE 低價股 TOP10 資料日期（{source_date}）"
+            f"與本次分析日期（{expected_date}）不同，請確認是否為舊資料。"
+        )
+        section += f"⚠️ {warning}\n"
 
-    if not records:
-        return section + "目前沒有低價股分析紀錄。\n"
+    remember_line_low_price_warning(warning)
+    meta["warning"] = warning
 
-    latest = sorted(records, key=lambda r: r.get("analysis_time", ""), reverse=True)[0]
-    items = [
-        item for item in latest.get("items", [])
-        if float(item.get("收盤價", 999999) or 999999) < 60
-    ]
-    items = sort_history_items_by_level_then_score(items)[:5]
+    if low_price_top10.empty:
+        section += "目前沒有股價低於60元的候選股。\n"
+        return (section, meta) if return_meta else section
 
-    if not items:
-        return section + "目前沒有股價低於60元的候選股。\n"
-
-    for item in items:
+    for _, item in low_price_top10.head(10).iterrows():
         stop_loss_text = item.get("建議停損") or "未記錄"
         take_profit_text = item.get("第一停利") or "未記錄"
         section += (
             f"{item['股票代號']} {item['股票名稱']}\n"
-            f"收盤價：{item['收盤價']}｜總分：{item['總分']}｜等級：{item['等級']}\n"
+            f"收盤價：{item['收盤價']}｜總分：{round(float(item['總分']), 2)}｜等級：{item['等級']}\n"
             f"停損價：{stop_loss_text}｜停利價：{take_profit_text}\n\n"
         )
 
-    return section
+    return (section, meta) if return_meta else section
 
 
 def build_line_message_from_history():
@@ -1998,7 +2089,12 @@ def build_line_message_from_history():
             f"停損價：{stop_loss_text}｜停利價：{take_profit_text}\n\n"
         )
 
-    msg += build_low_price_line_section(latest.get("strategy_mode"))
+    low_price_section, _ = build_low_price_line_section(
+        latest.get("strategy_mode"),
+        expected_analysis_time=latest.get("analysis_time"),
+        return_meta=True,
+    )
+    msg += low_price_section
 
     return msg, None
 
@@ -2157,10 +2253,12 @@ def perform_manual_refresh(scan_limit):
         analysis_log["last_analysis_time"] = analysis_time
         save_analysis_log(analysis_log)
 
+        latest_low_price_top10_by_strategy = {}
         for mode, mode_df in dfs_by_strategy.items():
             if not mode_df.empty:
                 mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
                 mode_low_price_top10 = get_low_price_top10(mode_df)
+                latest_low_price_top10_by_strategy[mode] = mode_low_price_top10
 
                 record_top10_history(
                     TOP10_HISTORY_FILE,
@@ -2181,6 +2279,8 @@ def perform_manual_refresh(scan_limit):
         st.session_state["latest_analysis_payload"] = payload
         st.session_state["latest_top10_history"] = load_top10_history(TOP10_HISTORY_FILE)
         st.session_state["latest_trade_tracking"] = trade_tracking
+        st.session_state["latest_analysis_time"] = analysis_time
+        st.session_state["low_price_top10"] = latest_low_price_top10_by_strategy
 
         try:
             line_status_text = send_official_line_after_manual_refresh()
@@ -2417,6 +2517,8 @@ if st.session_state.get("admin_ok") == True:
 df = dfs_by_strategy.get(display_strategy, pd.DataFrame())
 st.caption(f"目前顯示策略：{display_strategy}。一般瀏覽只讀取已儲存結果，不會重新抓資料。")
 st.info(line_status_text)
+if st.session_state.get("admin_ok") == True and st.session_state.get("line_low_price_top10_warning"):
+    st.warning(st.session_state["line_low_price_top10_warning"])
 
 
 if df.empty:
