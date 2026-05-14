@@ -868,6 +868,146 @@ def get_recent_trading_value(symbol):
     return snapshot["trading_value"]
 
 
+def normalize_price_columns(df):
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = [c[0] for c in df.columns]
+    df.index = pd.to_datetime(df.index).tz_localize(None).normalize()
+    return df.sort_index()
+
+
+def fetch_yfinance_daily(symbol, period):
+    df = yf.download(
+        symbol,
+        period=period,
+        interval="1d",
+        progress=False,
+        auto_adjust=False,
+        threads=False,
+    )
+    if df is None or df.empty:
+        return None
+    return normalize_price_columns(df)
+
+
+def latest_valid_price_row(df):
+    if df is None or df.empty or "Close" not in df.columns or "Volume" not in df.columns:
+        return None, None
+    valid_df = df.dropna(subset=["Close", "Volume"])
+    valid_df = valid_df[(valid_df["Close"] > 0) & (valid_df["Volume"] > 0)]
+    if valid_df.empty:
+        return None, None
+    latest_date = normalize_market_data_date(valid_df.index.max())
+    return latest_date, valid_df.iloc[-1]
+
+
+def merge_recent_price_data(base_df, recent_df):
+    if base_df is None or base_df.empty:
+        return recent_df
+    if recent_df is None or recent_df.empty:
+        return base_df
+    merged = pd.concat([base_df, recent_df])
+    merged = merged[~merged.index.duplicated(keep="last")]
+    return merged.sort_index()
+
+
+def add_price_indicators(df):
+    df = df.copy()
+    df["MA5"] = df["Close"].rolling(5).mean()
+    df["MA10"] = df["Close"].rolling(10).mean()
+    df["MA20"] = df["Close"].rolling(20).mean()
+    df["MA60"] = df["Close"].rolling(60).mean()
+    df["VOL20"] = df["Volume"].rolling(20).mean()
+    df["HIGH20"] = df["Close"].rolling(20).max()
+
+    macd = MACD(close=df["Close"])
+    df["MACD_HIST"] = macd.macd_diff()
+
+    rsi = RSIIndicator(close=df["Close"])
+    df["RSI"] = rsi.rsi()
+
+    df["頝?0?亦?%"] = (df["Close"] - df["MA20"]) / df["MA20"] * 100
+    df["20?交郭??"] = df["Close"].rolling(20).std() / df["Close"] * 100
+    return df.dropna()
+
+
+def download_price_data(symbol):
+    expected_date = latest_tw_trading_day()
+    df = fetch_yfinance_daily(symbol, "5y")
+    fallback_status = "無資料"
+
+    if df is None or len(df) < 250:
+        gc.collect()
+        return None
+
+    latest_date, _ = latest_valid_price_row(df)
+    if latest_date and latest_date >= expected_date:
+        fallback_status = "5d 成功且最新"
+    else:
+        recent_df = fetch_yfinance_daily(symbol, "1mo")
+        recent_latest_date, _ = latest_valid_price_row(recent_df)
+        if recent_latest_date and recent_latest_date >= expected_date:
+            df = merge_recent_price_data(df, recent_df)
+            fallback_status = "5d 舊資料，1mo 重抓成功"
+        else:
+            df = merge_recent_price_data(df, recent_df)
+            fallback_status = "重抓後仍舊資料"
+
+    prepared_df = add_price_indicators(df)
+    if prepared_df.empty or len(prepared_df) < 250:
+        gc.collect()
+        return None
+
+    prepared_df.attrs["market_data_date"] = dataframe_latest_market_date(prepared_df)
+    prepared_df.attrs["market_data_fallback_status"] = fallback_status
+    return prepared_df
+
+
+def get_recent_trading_snapshot(symbol):
+    expected_date = latest_tw_trading_day()
+    df = fetch_yfinance_daily(symbol, "5d")
+    fallback_status = "無資料"
+    latest_date, latest = latest_valid_price_row(df)
+
+    if latest_date and latest_date >= expected_date:
+        fallback_status = "5d 成功且最新"
+    else:
+        recent_df = fetch_yfinance_daily(symbol, "1mo")
+        recent_latest_date, recent_latest = latest_valid_price_row(recent_df)
+        if recent_latest_date and recent_latest_date >= expected_date:
+            latest_date = recent_latest_date
+            latest = recent_latest
+            fallback_status = "5d 舊資料，1mo 重抓成功"
+        elif latest is not None:
+            fallback_status = "重抓後仍舊資料"
+        elif recent_latest is not None:
+            latest_date = recent_latest_date
+            latest = recent_latest
+            fallback_status = "重抓後仍舊資料"
+        else:
+            gc.collect()
+            return None, "無資料"
+
+    price = float(latest["Close"])
+    volume = float(latest["Volume"])
+    trading_value = price * volume
+
+    gc.collect()
+    return {
+        "price": price,
+        "volume": volume,
+        "trading_value": trading_value,
+        "market_data_date": latest_date,
+        "fallback_status": fallback_status,
+    }, None
+
+
+def get_recent_trading_value(symbol):
+    snapshot, _ = get_recent_trading_snapshot(symbol)
+    if not snapshot:
+        return None
+    return snapshot["trading_value"]
+
+
 # =========================
 # 流動性
 # =========================
@@ -1513,6 +1653,18 @@ def run_scan(scan_limit):
         "kline_date_counts": {},
         "top10_market_dates": {},
         "top10_stale_by_strategy": {},
+        "data_source_retry_counts": {
+            "5d 成功且最新": 0,
+            "5d 舊資料，1mo 重抓成功": 0,
+            "重抓後仍舊資料": 0,
+            "無資料": 0,
+        },
+        "analysis_source_retry_counts": {
+            "5d 成功且最新": 0,
+            "5d 舊資料，1mo 重抓成功": 0,
+            "重抓後仍舊資料": 0,
+            "無資料": 0,
+        },
         "exclude_reasons": {
             "無價格資料": 0,
             "股價低於 10 元": 0,
@@ -1526,10 +1678,14 @@ def run_scan(scan_limit):
         try:
             snapshot, error_reason = get_recent_trading_snapshot(symbol)
             if error_reason:
+                debug_info["data_source_retry_counts"]["無資料"] += 1
                 debug_info["exclude_reasons"].setdefault(error_reason, 0)
                 debug_info["exclude_reasons"][error_reason] += 1
                 continue
 
+            fallback_status = snapshot.get("fallback_status", "無資料")
+            debug_info["data_source_retry_counts"].setdefault(fallback_status, 0)
+            debug_info["data_source_retry_counts"][fallback_status] += 1
             debug_info["price_data_success_count"] += 1
             liquidity_ok, _, liquidity_note = liquidity_pass(snapshot["price"], snapshot["volume"])
 
@@ -1564,6 +1720,12 @@ def run_scan(scan_limit):
             symbol = item["symbol"]
 
             price_df = download_price_data(symbol)
+            analysis_fallback_status = (
+                price_df.attrs.get("market_data_fallback_status", "無資料")
+                if price_df is not None else "無資料"
+            )
+            debug_info["analysis_source_retry_counts"].setdefault(analysis_fallback_status, 0)
+            debug_info["analysis_source_retry_counts"][analysis_fallback_status] += 1
             if price_df is None:
                 debug_info["exclude_reasons"]["K 線資料不足"] += 1
                 continue
@@ -1623,7 +1785,7 @@ def run_scan(scan_limit):
         debug_info["top10_market_dates"][mode] = top10_dates
         debug_info["top10_stale_by_strategy"][mode] = [
             item for item in top10_dates
-            if item.get("行情資料日期") != debug_info["market_data_date"]
+            if not market_data_is_current(item.get("行情資料日期"))
         ]
 
     return dataframes, len(temp_list), len(selected), format_taipei_dt(), debug_info["market_data_date"], debug_info
@@ -2498,6 +2660,10 @@ def show_manual_refresh_summary(summary):
         st.write(f"成功取得價格資料數量：{debug_info.get('price_data_success_count')}")
         st.write(f"流動性合格股票數量：{debug_info.get('liquidity_pass_count')}")
         st.write(f"最終送入分析股票數量：{debug_info.get('selected_count')}")
+        st.write("資料源重抓統計（成交金額 5d / 1mo）：")
+        st.json(debug_info.get("data_source_retry_counts", {}))
+        st.write("資料源重抓統計（分析 K 線）：")
+        st.json(debug_info.get("analysis_source_retry_counts", {}))
         st.write("各股票最新 K 線日期統計：")
         st.json(debug_info.get("kline_date_counts", {}))
         st.write("排除原因統計：")
