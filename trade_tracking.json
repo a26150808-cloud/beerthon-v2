@@ -5859,7 +5859,29 @@
       "exit_reason": null,
       "max_tracking_days": 60,
       "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-05-15",
+      "analysis_time": "2026-05-15 01:40:39",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2891",
+      "股票名稱": "中信金",
+      "等級": "A級",
+      "總分": 154.0,
+      "entry_price": 54.9,
+      "stop_loss": 52.59,
+      "take_profit": 60.39,
+      "建議停損": 52.59,
+      "第一停利": 60.39,
+      "status": "holding",
+      "latest_price": 54.9,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
     }
   ],
-  "last_updated": "2026-05-15 01:04:52"
+  "last_updated": "2026-05-15 01:41:23"
 }
