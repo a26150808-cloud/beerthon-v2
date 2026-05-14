@@ -782,25 +782,48 @@ def download_price_data(symbol):
     return df.dropna()
 
 
-def get_recent_trading_value(symbol):
-    df = yf.download(symbol, period="5d", progress=False, auto_adjust=False, threads=False)
+def get_recent_trading_snapshot(symbol):
+    df = yf.download(symbol, period="10d", progress=False, auto_adjust=False, threads=False)
 
     if df.empty:
         del df
         gc.collect()
-        return None
+        return None, "無價格資料"
 
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = [c[0] for c in df.columns]
 
-    latest = df.iloc[-1]
+    if "Close" not in df.columns or "Volume" not in df.columns:
+        del df
+        gc.collect()
+        return None, "無價格資料"
+
+    valid_df = df.dropna(subset=["Close", "Volume"])
+    valid_df = valid_df[(valid_df["Close"] > 0) & (valid_df["Volume"] > 0)]
+    if valid_df.empty:
+        del df
+        gc.collect()
+        return None, "無價格資料"
+
+    latest = valid_df.iloc[-1]
     price = float(latest["Close"])
     volume = float(latest["Volume"])
-
     trading_value = price * volume
+
     del df
     gc.collect()
-    return trading_value
+    return {
+        "price": price,
+        "volume": volume,
+        "trading_value": trading_value,
+    }, None
+
+
+def get_recent_trading_value(symbol):
+    snapshot, _ = get_recent_trading_snapshot(symbol)
+    if not snapshot:
+        return None
+    return snapshot["trading_value"]
 
 
 # =========================
@@ -1434,25 +1457,55 @@ def run_scan(scan_limit):
     prescreen_items = all_items
 
     temp_list = []
+    debug_info = {
+        "scan_limit": int(scan_limit),
+        "requested_scan_limit": int(requested_scan_limit),
+        "raw_stock_count": len(all_items),
+        "price_data_success_count": 0,
+        "liquidity_pass_count": 0,
+        "selected_count": 0,
+        "exclude_reasons": {
+            "無價格資料": 0,
+            "股價低於 10 元": 0,
+            "成交金額不足 5000 萬": 0,
+            "K 線資料不足": 0,
+            "其他錯誤": 0,
+        },
+    }
 
     for index, (symbol, info) in enumerate(prescreen_items, start=1):
         try:
-            trading_value = get_recent_trading_value(symbol)
+            snapshot, error_reason = get_recent_trading_snapshot(symbol)
+            if error_reason:
+                debug_info["exclude_reasons"].setdefault(error_reason, 0)
+                debug_info["exclude_reasons"][error_reason] += 1
+                continue
 
-            if trading_value is not None and trading_value >= 50_000_000:
+            debug_info["price_data_success_count"] += 1
+            liquidity_ok, _, liquidity_note = liquidity_pass(snapshot["price"], snapshot["volume"])
+
+            if liquidity_ok:
                 temp_list.append({
                     "symbol": symbol,
                     "info": info,
-                    "trading_value": trading_value
+                    "trading_value": snapshot["trading_value"]
                 })
+            elif snapshot["price"] < 10:
+                debug_info["exclude_reasons"]["股價低於 10 元"] += 1
+            elif snapshot["trading_value"] < 50_000_000:
+                debug_info["exclude_reasons"]["成交金額不足 5000 萬"] += 1
+            else:
+                debug_info["exclude_reasons"]["其他錯誤"] += 1
         except Exception:
-            pass
+            debug_info["exclude_reasons"]["其他錯誤"] += 1
         finally:
             if cloud_safe_mode and index % 50 == 0:
                 gc.collect()
 
     temp_list = sorted(temp_list, key=lambda x: (-x["trading_value"], x["info"]["code"]))
+    debug_info["liquidity_pass_count"] = len(temp_list)
     selected = temp_list[:scan_limit]
+    debug_info["selected_count"] = len(selected)
 
     results_by_strategy = {mode: [] for mode in STRATEGY_MODES}
 
@@ -1463,6 +1516,7 @@ def run_scan(scan_limit):
 
             price_df = download_price_data(symbol)
             if price_df is None:
+                debug_info["exclude_reasons"]["K 線資料不足"] += 1
                 continue
 
             try:
@@ -1497,7 +1551,7 @@ def run_scan(scan_limit):
         else:
             dataframes[mode] = pd.DataFrame()
 
-    return dataframes, len(temp_list), len(selected), format_taipei_dt()
+    return dataframes, len(temp_list), len(selected), format_taipei_dt(), debug_info
 
 
 def top10_display_columns():
@@ -2316,7 +2370,7 @@ def count_successful_stocks(dfs_by_strategy):
     return len(codes) if codes else fallback_count
 
 
-def build_manual_refresh_summary(scan_mode, scan_limit, start_time, finish_time, dfs_by_strategy, analysis_time):
+def build_manual_refresh_summary(scan_mode, scan_limit, start_time, finish_time, dfs_by_strategy, analysis_time, debug_info=None):
     analysis_date = str(analysis_time or "")[:10]
     return {
         "scan_mode": scan_mode_label(scan_mode),
@@ -2326,6 +2380,7 @@ def build_manual_refresh_summary(scan_mode, scan_limit, start_time, finish_time,
         "success_count": count_successful_stocks(dfs_by_strategy),
         "analysis_date": analysis_date,
         "date_updated": analysis_date == today_taipei(),
+        "debug_info": debug_info or {},
     }
 
 
@@ -2343,6 +2398,17 @@ def show_manual_refresh_summary(summary):
     if not summary.get("date_updated"):
         st.warning("手動刷新已完成，但分析日期沒有更新到今天，請檢查 Cloud 是否中斷或資源不足。")
 
+    debug_info = summary.get("debug_info") or {}
+    if debug_info:
+        st.caption("管理員 debug")
+        st.write(f"scan_limit 實際值：{debug_info.get('scan_limit')}")
+        st.write(f"原始股票池數量：{debug_info.get('raw_stock_count')}")
+        st.write(f"成功取得價格資料數量：{debug_info.get('price_data_success_count')}")
+        st.write(f"流動性合格股票數量：{debug_info.get('liquidity_pass_count')}")
+        st.write(f"最終送入分析股票數量：{debug_info.get('selected_count')}")
+        st.write("排除原因統計：")
+        st.json(debug_info.get("exclude_reasons", {}))
+
 
 def perform_manual_refresh(scan_limit, scan_mode=None):
     refresh_start_time = format_taipei_dt()
@@ -2352,7 +2418,7 @@ def perform_manual_refresh(scan_limit, scan_mode=None):
     try:
         st.info("開始刷新")
         st.cache_data.clear()
-        dfs_by_strategy, liquidity_count, selected_count, analysis_time = run_scan(scan_limit)
+        dfs_by_strategy, liquidity_count, selected_count, analysis_time, debug_info = run_scan(scan_limit)
         st.info("run_scan 完成")
 
         payload = build_analysis_result_payload(
@@ -2424,6 +2490,7 @@ def perform_manual_refresh(scan_limit, scan_mode=None):
             refresh_finish_time,
             dfs_by_strategy,
             analysis_time,
+            debug_info,
         )
         st.session_state["manual_refresh_summary"] = refresh_summary
 
