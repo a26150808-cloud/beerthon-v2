@@ -1,0 +1,44 @@
+本機掃描 EXE 使用說明
+
+1. 如何執行 EXE
+
+先執行 build_local_scanner_exe.bat 打包。
+打包完成後，執行：
+
+dist\local_scanner\local_scanner.exe
+
+建議從專案根目錄執行，或保持 dist 資料夾在專案根目錄底下，讓程式可以找到 app2.py。
+
+2. 執行後會產生哪些 JSON
+
+本機掃描會更新以下檔案：
+
+analysis_result.json
+top10_history.json
+low_price_top10_history.json
+trade_tracking.json
+analysis_log.json
+
+3. 如何確認結果成功
+
+執行完成後，視窗會顯示：
+
+分析開始時間
+分析完成時間
+成功分析股票數
+TOP10 是否產生
+低價股 TOP10 是否產生
+是否成功寫入 JSON
+
+如果顯示「是否成功寫入 JSON：是」，代表本機 JSON 已成功產生或更新。
+
+4. 如何手動上傳 GitHub
+
+請在專案根目錄執行：
+
+git add analysis_result.json top10_history.json low_price_top10_history.json trade_tracking.json analysis_log.json
+git commit -m "update analysis results from local scanner"
+git pull --rebase origin main
+git push origin main
+
+第一階段不會自動 push GitHub，請先用以上指令手動上傳。
