@@ -84,7 +84,7 @@ def send_line_message(message):
 import json
 import os
 import uuid
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
 from ta.trend import MACD
 from ta.momentum import RSIIndicator
@@ -139,6 +139,38 @@ def format_taipei_dt(dt=None):
 
 def today_taipei():
     return now_taipei().strftime("%Y-%m-%d")
+
+
+def latest_tw_trading_day(reference_dt=None):
+    if reference_dt is None:
+        reference_dt = now_taipei()
+    day = reference_dt.date()
+    while day.weekday() >= 5:
+        day = day - timedelta(days=1)
+    return day.strftime("%Y-%m-%d")
+
+
+def normalize_market_data_date(value):
+    if value is None:
+        return None
+    try:
+        ts = pd.Timestamp(value)
+        if ts.tzinfo is not None:
+            ts = ts.tz_convert(TAIPEI_TZ)
+        return ts.strftime("%Y-%m-%d")
+    except Exception:
+        return None
+
+
+def dataframe_latest_market_date(df):
+    if df is None or df.empty:
+        return None
+    return normalize_market_data_date(df.index.max())
+
+
+def market_data_is_current(market_data_date):
+    expected_date = latest_tw_trading_day()
+    return bool(market_data_date) and str(market_data_date) >= expected_date
 
 
 def safe_load_json(path, default):
@@ -407,6 +439,12 @@ def analysis_payload_time(payload):
     return payload.get("analysis_time") or payload.get("generated_at") or payload.get("last_updated")
 
 
+def analysis_payload_market_data_date(payload):
+    if not isinstance(payload, dict):
+        return None
+    return payload.get("market_data_date")
+
+
 def is_stale_analysis_time(analysis_time):
     return str(analysis_time or "").startswith("2026-05-05")
 
@@ -418,6 +456,7 @@ def manual_save_current_results_to_github(analysis_payload, top10_history, trade
         "skipped": [],
         "missing_config": [],
         "analysis_time": analysis_payload_time(analysis_payload),
+        "market_data_date": analysis_payload_market_data_date(analysis_payload),
         "verification": None,
     }
 
@@ -427,6 +466,9 @@ def manual_save_current_results_to_github(analysis_payload, top10_history, trade
 
     if is_stale_analysis_time(result["analysis_time"]):
         result["failed"].append({"path": ANALYSIS_RESULT_FILE, "reason": "分析時間是 2026-05-05，已停止保存"})
+        return result
+    if not market_data_is_current(result["market_data_date"]):
+        result["failed"].append({"path": ANALYSIS_RESULT_FILE, "reason": "本次抓到的行情資料不是最新交易日，請勿保存"})
         return result
 
     settings = github_api_settings()
@@ -1144,6 +1186,7 @@ def analyze_stock(symbol, info, strategy_mode, df=None, financial_data=None):
 
     latest = df.iloc[-1]
     prev = df.iloc[-2]
+    latest_market_date = dataframe_latest_market_date(df)
 
     close = float(latest["Close"])
     volume = float(latest["Volume"])
@@ -1216,6 +1259,7 @@ def analyze_stock(symbol, info, strategy_mode, df=None, financial_data=None):
         "股票名稱": info["name"],
         "市場": info["market"],
         "收盤價": round(close, 2),
+        "行情資料日期": latest_market_date,
 
         "是否符合策略": "是" if is_match else "否",
         "差幾條件達標": max(min_score - tech_score, 0),
@@ -1464,6 +1508,11 @@ def run_scan(scan_limit):
         "price_data_success_count": 0,
         "liquidity_pass_count": 0,
         "selected_count": 0,
+        "market_data_date": None,
+        "latest_market_data_date": None,
+        "kline_date_counts": {},
+        "top10_market_dates": {},
+        "top10_stale_by_strategy": {},
         "exclude_reasons": {
             "無價格資料": 0,
             "股價低於 10 元": 0,
@@ -1518,6 +1567,11 @@ def run_scan(scan_limit):
             if price_df is None:
                 debug_info["exclude_reasons"]["K 線資料不足"] += 1
                 continue
+            latest_market_date = dataframe_latest_market_date(price_df)
+            if latest_market_date:
+                debug_info["kline_date_counts"][latest_market_date] = (
+                    debug_info["kline_date_counts"].get(latest_market_date, 0) + 1
+                )
 
             try:
                 financial_data = get_financial_score(symbol)
@@ -1551,7 +1605,28 @@ def run_scan(scan_limit):
         else:
             dataframes[mode] = pd.DataFrame()
 
-    return dataframes, len(temp_list), len(selected), format_taipei_dt(), debug_info
+    if debug_info["kline_date_counts"]:
+        debug_info["latest_market_data_date"] = max(debug_info["kline_date_counts"])
+        debug_info["market_data_date"] = max(
+            debug_info["kline_date_counts"],
+            key=lambda date: (debug_info["kline_date_counts"][date], date),
+        )
+
+    for mode, mode_df in dataframes.items():
+        if mode_df.empty or "行情資料日期" not in mode_df.columns:
+            debug_info["top10_market_dates"][mode] = []
+            debug_info["top10_stale_by_strategy"][mode] = []
+            continue
+
+        mode_top10 = sort_by_level_then_score(enforce_s_level_score_floor_for_display(mode_df)).head(10)
+        top10_dates = mode_top10[["股票代號", "股票名稱", "收盤價", "行情資料日期"]].to_dict("records")
+        debug_info["top10_market_dates"][mode] = top10_dates
+        debug_info["top10_stale_by_strategy"][mode] = [
+            item for item in top10_dates
+            if item.get("行情資料日期") != debug_info["market_data_date"]
+        ]
+
+    return dataframes, len(temp_list), len(selected), format_taipei_dt(), debug_info["market_data_date"], debug_info
 
 
 def top10_display_columns():
@@ -1614,10 +1689,11 @@ def records_to_dataframe(records):
     return pd.DataFrame(records)
 
 
-def build_analysis_result_payload(dfs_by_strategy, liquidity_count, selected_count, analysis_time, scan_limit):
+def build_analysis_result_payload(dfs_by_strategy, liquidity_count, selected_count, analysis_time, market_data_date, scan_limit):
     saved_at = format_taipei_dt()
     return {
         "analysis_time": analysis_time,
+        "market_data_date": market_data_date,
         "saved_at": saved_at,
         "last_updated": saved_at,
         "generated_at": analysis_time,
@@ -1645,6 +1721,7 @@ def parse_analysis_result_payload(payload):
         int(payload.get("liquidity_count", 0) or 0),
         int(payload.get("selected_count", 0) or 0),
         payload.get("analysis_time", "尚未分析"),
+        payload.get("market_data_date"),
     )
 
 
@@ -1706,7 +1783,7 @@ def get_latest_analysis_payload_for_line():
 def get_latest_low_price_top10_for_line(strategy_mode=None):
     payload, source = get_latest_analysis_payload_for_line()
     if payload:
-        dfs_by_strategy, _, _, analysis_time = parse_analysis_result_payload(payload)
+        dfs_by_strategy, _, _, analysis_time, _ = parse_analysis_result_payload(payload)
         mode = strategy_mode if strategy_mode in dfs_by_strategy else None
         if mode is None:
             mode = next((m for m in STRATEGY_MODES if not dfs_by_strategy.get(m, pd.DataFrame()).empty), strategy_mode)
@@ -2339,13 +2416,17 @@ def verify_analysis_result_saved(expected_payload):
     saved_payload = safe_load_json(ANALYSIS_RESULT_FILE, {})
     expected_time = expected_payload.get("analysis_time")
     expected_saved_at = expected_payload.get("saved_at")
+    expected_market_data_date = expected_payload.get("market_data_date")
 
     saved_time = saved_payload.get("analysis_time")
+    saved_market_data_date = saved_payload.get("market_data_date")
     saved_last_updated = saved_payload.get("last_updated")
     saved_generated_at = saved_payload.get("generated_at")
     saved_saved_at = saved_payload.get("saved_at")
 
     if saved_time != expected_time:
+        return False, "analysis_result.json 未成功更新"
+    if saved_market_data_date != expected_market_data_date:
         return False, "analysis_result.json 未成功更新"
     if saved_generated_at != expected_time:
         return False, "analysis_result.json 未成功更新"
@@ -2370,15 +2451,20 @@ def count_successful_stocks(dfs_by_strategy):
     return len(codes) if codes else fallback_count
 
 
-def build_manual_refresh_summary(scan_mode, scan_limit, start_time, finish_time, dfs_by_strategy, analysis_time, debug_info=None):
+def build_manual_refresh_summary(scan_mode, scan_limit, start_time, finish_time, dfs_by_strategy, analysis_time, market_data_date, debug_info=None):
     analysis_date = str(analysis_time or "")[:10]
+    expected_market_data_date = latest_tw_trading_day()
     return {
         "scan_mode": scan_mode_label(scan_mode),
         "scan_limit": int(scan_limit),
         "start_time": start_time,
         "finish_time": finish_time,
         "success_count": count_successful_stocks(dfs_by_strategy),
+        "analysis_time": analysis_time,
         "analysis_date": analysis_date,
+        "market_data_date": market_data_date,
+        "expected_market_data_date": expected_market_data_date,
+        "market_data_current": market_data_is_current(market_data_date),
         "date_updated": analysis_date == today_taipei(),
         "debug_info": debug_info or {},
     }
@@ -2394,20 +2480,36 @@ def show_manual_refresh_summary(summary):
     st.info(f"本次完成時間：{summary.get('finish_time')}")
     st.info(f"本次分析成功股票數：{summary.get('success_count')}")
     st.info(f"本次分析日期：{summary.get('analysis_date')}")
+    st.info(f"本次行情資料日期：{summary.get('market_data_date')}")
 
     if not summary.get("date_updated"):
         st.warning("手動刷新已完成，但分析日期沒有更新到今天，請檢查 Cloud 是否中斷或資源不足。")
+    if not summary.get("market_data_current"):
+        st.warning("本次抓到的行情資料不是最新交易日，請勿保存")
 
     debug_info = summary.get("debug_info") or {}
     if debug_info:
         st.caption("管理員 debug")
+        st.write(f"本次分析完成時間：{summary.get('analysis_time')}")
+        st.write(f"主要行情資料日期 market_data_date：{summary.get('market_data_date')}")
+        st.write(f"本次抓到的最新 K 線日期：{debug_info.get('latest_market_data_date')}")
         st.write(f"scan_limit 實際值：{debug_info.get('scan_limit')}")
         st.write(f"原始股票池數量：{debug_info.get('raw_stock_count')}")
         st.write(f"成功取得價格資料數量：{debug_info.get('price_data_success_count')}")
         st.write(f"流動性合格股票數量：{debug_info.get('liquidity_pass_count')}")
         st.write(f"最終送入分析股票數量：{debug_info.get('selected_count')}")
+        st.write("各股票最新 K 線日期統計：")
+        st.json(debug_info.get("kline_date_counts", {}))
         st.write("排除原因統計：")
         st.json(debug_info.get("exclude_reasons", {}))
+        display_mode = get_session_value("display_strategy", STRATEGY_MODES[0])
+        top10_dates = debug_info.get("top10_market_dates", {}).get(display_mode, [])
+        if top10_dates:
+            st.write("TOP10 每檔股票使用的最新 K 線日期：")
+            st.dataframe(pd.DataFrame(top10_dates), use_container_width=True, hide_index=True)
+        stale_top10 = debug_info.get("top10_stale_by_strategy", {}).get(display_mode, [])
+        if stale_top10:
+            st.warning("TOP10 有股票不是最新行情日期，請勿保存")
 
 
 def perform_manual_refresh(scan_limit, scan_mode=None):
@@ -2418,7 +2520,7 @@ def perform_manual_refresh(scan_limit, scan_mode=None):
     try:
         st.info("開始刷新")
         st.cache_data.clear()
-        dfs_by_strategy, liquidity_count, selected_count, analysis_time, debug_info = run_scan(scan_limit)
+        dfs_by_strategy, liquidity_count, selected_count, analysis_time, market_data_date, debug_info = run_scan(scan_limit)
         st.info("run_scan 完成")
 
         payload = build_analysis_result_payload(
@@ -2426,6 +2528,7 @@ def perform_manual_refresh(scan_limit, scan_mode=None):
             liquidity_count,
             selected_count,
             analysis_time,
+            market_data_date,
             scan_limit,
         )
         save_analysis_result(payload)
@@ -2490,6 +2593,7 @@ def perform_manual_refresh(scan_limit, scan_mode=None):
             refresh_finish_time,
             dfs_by_strategy,
             analysis_time,
+            market_data_date,
             debug_info,
         )
         st.session_state["manual_refresh_summary"] = refresh_summary
@@ -2518,6 +2622,7 @@ with st.sidebar:
         options=STRATEGY_MODES,
         index=0
     )
+    st.session_state["display_strategy"] = display_strategy
 
     st.divider()
 
@@ -2549,6 +2654,7 @@ with st.sidebar:
                     latest_top10_history = st.session_state.get("latest_top10_history")
                     latest_trade_tracking = st.session_state.get("latest_trade_tracking")
                     save_analysis_time = analysis_payload_time(latest_analysis_payload)
+                    save_market_data_date = analysis_payload_market_data_date(latest_analysis_payload)
 
                     if not latest_analysis_payload or not latest_top10_history or not latest_trade_tracking:
                         st.warning("請先按手動刷新今日資料，再手動保存到 GitHub")
@@ -2557,8 +2663,13 @@ with st.sidebar:
                         st.warning(f"即將保存分析時間：{save_analysis_time}")
                         st.warning("分析時間是 2026-05-05，已停止保存")
                         manual_github_save_result = None
+                    elif not market_data_is_current(save_market_data_date):
+                        st.warning(f"即將保存行情資料日期：{save_market_data_date or '未記錄'}")
+                        st.warning("本次抓到的行情資料不是最新交易日，請勿保存")
+                        manual_github_save_result = None
                     else:
                         st.info(f"即將保存分析時間：{save_analysis_time}")
+                        st.info(f"即將保存行情資料日期：{save_market_data_date}")
                         manual_github_save_result = manual_save_current_results_to_github(
                             latest_analysis_payload,
                             latest_top10_history,
@@ -2677,7 +2788,7 @@ with st.sidebar:
 st.subheader("🔥 今日 Top 10 推薦")
 
 analysis_result, analysis_result_error, analysis_result_exists = load_analysis_result_checked()
-dfs_by_strategy, liquidity_count, selected_count, analysis_time = parse_analysis_result_payload(analysis_result)
+dfs_by_strategy, liquidity_count, selected_count, analysis_time, market_data_date = parse_analysis_result_payload(analysis_result)
 trade_tracking = load_trade_tracking()
 line_status_text = st.session_state.pop("manual_refresh_line_status", maybe_send_scheduled_line())
 
@@ -2685,6 +2796,9 @@ if analysis_result_error:
     st.error(analysis_result_error)
 
 st.caption(f"📅 上次分析完成時間：{analysis_time}")
+st.caption(f"📈 行情資料日期：{market_data_date or '未記錄'}")
+if market_data_date and not market_data_is_current(market_data_date):
+    st.warning("本次抓到的行情資料不是最新交易日，請勿保存")
 
 if st.session_state.get("admin_ok") == True:
     if st.button("📱 測試LINE通知"):
