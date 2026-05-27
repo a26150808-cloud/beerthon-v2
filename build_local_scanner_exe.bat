@@ -6,6 +6,14 @@ python -m PyInstaller ^
   --noconfirm ^
   --onedir ^
   --name local_scanner ^
+  --collect-all streamlit ^
+  --copy-metadata streamlit ^
+  --collect-all numpy ^
+  --collect-all pandas ^
+  --collect-all pyarrow ^
+  --collect-all yfinance ^
+  --collect-all curl_cffi ^
+  --collect-all twstock ^
   local_scanner.py
 
 echo.
