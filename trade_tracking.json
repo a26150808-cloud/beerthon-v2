@@ -14182,13 +14182,8 @@
       "tracking_days": 1
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "1513",
@@ -14209,10 +14204,6 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
       "strategy_mode": "短線（強勢突破）",
@@ -14259,7 +14250,6 @@
     {
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "8271",
@@ -14280,13 +14270,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "1503",
@@ -14307,13 +14292,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "6016",
@@ -14334,13 +14314,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "2449",
@@ -14361,13 +14336,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "3030",
@@ -14388,13 +14358,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "8131",
@@ -14415,13 +14380,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "原本TOP10",
       "股票代號": "2308",
@@ -14442,57 +14402,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-      "strategy_mode": "短線（強勢突破）",
-      "source": "原本TOP10",
-      "股票代號": "2360",
-      "股票名稱": "致茂",
-      "等級": "A級",
-      "總分": 186.0,
-      "entry_price": 2570.0,
-      "stop_loss": 2390.1,
-      "take_profit": 2827.0,
-      "建議停損": 2390.1,
-      "第一停利": 2827.0,
-      "status": "holding",
-      "latest_price": 2570.0,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
-      "max_tracking_days": 20,
-      "tracking_days": 0
-    },
-    {
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-      "strategy_mode": "短線（強勢突破）",
-      "source": "原本TOP10",
-      "股票代號": "2317",
-      "股票名稱": "鴻海",
-      "等級": "A級",
-      "總分": 179.0,
-      "entry_price": 263.0,
-      "stop_loss": 244.59,
-      "take_profit": 289.3,
-      "建議停損": 244.59,
-      "第一停利": 289.3,
-      "status": "holding",
-      "latest_price": 263.0,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
-      "max_tracking_days": 20,
-      "tracking_days": 0
-    },
-    {
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "6005",
@@ -14513,13 +14424,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "6016",
@@ -14540,23 +14446,14 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2891",
       "股票名稱": "中信金",
       "等級": "A級",
-<<<<<<< HEAD
-      "總分": 162.0,
-=======
       "總分": 152.0,
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "entry_price": 59.3,
       "stop_loss": 55.15,
       "take_profit": 65.23,
@@ -14571,23 +14468,14 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2883",
       "股票名稱": "凱基金",
       "等級": "A級",
-<<<<<<< HEAD
-      "總分": 156.0,
-=======
       "總分": 146.0,
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "entry_price": 22.15,
       "stop_loss": 21.46,
       "take_profit": 24.36,
@@ -14602,13 +14490,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "4939",
@@ -14629,13 +14512,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2610",
@@ -14656,13 +14534,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2885",
@@ -14683,13 +14556,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2618",
@@ -14710,13 +14578,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2002",
@@ -14737,13 +14600,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "短線（強勢突破）",
       "source": "低價股TOP10",
       "股票代號": "2609",
@@ -14764,10 +14622,6 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
       "strategy_mode": "中線（趨勢穩定）",
@@ -14792,7 +14646,6 @@
     {
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "6282",
@@ -14813,13 +14666,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "2330",
@@ -14840,23 +14688,6 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-      "strategy_mode": "中線（趨勢穩定）",
-      "source": "原本TOP10",
-      "股票代號": "2881",
-      "股票名稱": "富邦金",
-      "等級": "S級",
-      "總分": 187.0,
-      "entry_price": 110.0,
-      "stop_loss": 96.8,
-      "take_profit": 129.8,
-      "建議停損": 96.8,
-      "第一停利": 129.8,
-      "status": "holding",
-      "latest_price": 110.0,
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
       "strategy_mode": "中線（趨勢穩定）",
@@ -14872,7 +14703,6 @@
       "第一停利": 1463.2,
       "status": "holding",
       "latest_price": 1240.0,
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
@@ -14880,13 +14710,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "3583",
@@ -14907,13 +14732,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "2360",
@@ -14934,13 +14754,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "2476",
@@ -14961,13 +14776,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "1303",
@@ -14988,13 +14798,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "2313",
@@ -15015,13 +14820,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "原本TOP10",
       "股票代號": "3030",
@@ -15042,35 +14842,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-      "strategy_mode": "中線（趨勢穩定）",
-      "source": "原本TOP10",
-      "股票代號": "4768",
-      "股票名稱": "晶呈科技",
-      "等級": "S級",
-      "總分": 179.0,
-      "entry_price": 491.0,
-      "stop_loss": 432.08,
-      "take_profit": 579.38,
-      "建議停損": 432.08,
-      "第一停利": 579.38,
-      "status": "holding",
-      "latest_price": 491.0,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
-      "max_tracking_days": 60,
-      "tracking_days": 0
-    },
-    {
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "6282",
@@ -15091,13 +14864,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "2885",
@@ -15118,13 +14886,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "2489",
@@ -15145,13 +14908,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "5864",
@@ -15172,35 +14930,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-      "strategy_mode": "中線（趨勢穩定）",
-      "source": "低價股TOP10",
-      "股票代號": "2891",
-      "股票名稱": "中信金",
-      "等級": "A級",
-      "總分": 147.0,
-      "entry_price": 59.3,
-      "stop_loss": 52.18,
-      "take_profit": 69.97,
-      "建議停損": 52.18,
-      "第一停利": 69.97,
-      "status": "holding",
-      "latest_price": 59.3,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
-      "max_tracking_days": 60,
-      "tracking_days": 0
-    },
-    {
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "6005",
@@ -15221,13 +14952,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "2312",
@@ -15248,13 +14974,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "2618",
@@ -15275,13 +14996,8 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "strategy_mode": "中線（趨勢穩定）",
       "source": "低價股TOP10",
       "股票代號": "5471",
@@ -15302,23 +15018,6 @@
       "tracking_days": 0
     },
     {
-<<<<<<< HEAD
-      "analysis_date": "2026-05-29",
-      "analysis_time": "2026-05-29 06:32:37",
-      "strategy_mode": "中線（趨勢穩定）",
-      "source": "低價股TOP10",
-      "股票代號": "2883",
-      "股票名稱": "凱基金",
-      "等級": "A級",
-      "總分": 137.0,
-      "entry_price": 22.15,
-      "stop_loss": 19.49,
-      "take_profit": 26.14,
-      "建議停損": 19.49,
-      "第一停利": 26.14,
-      "status": "holding",
-      "latest_price": 22.15,
-=======
       "analysis_date": "2026-05-28",
       "analysis_time": "2026-05-28 17:20:13",
       "strategy_mode": "中線（趨勢穩定）",
@@ -15356,7 +15055,6 @@
       "第一停利": 54.22,
       "status": "holding",
       "latest_price": 45.95,
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
       "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
@@ -15364,9 +15062,5 @@
       "tracking_days": 0
     }
   ],
-<<<<<<< HEAD
-  "last_updated": "2026-05-29 06:34:10"
-=======
   "last_updated": "2026-05-28 17:21:13"
->>>>>>> 61a5507468bc8f5e789939affe7b6a9d47d0fce7
 }
