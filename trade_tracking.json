@@ -68321,13 +68321,14 @@
       "take_profit": 166.97,
       "建議停損": 124.52,
       "第一停利": 166.97,
-      "status": "holding",
-      "latest_price": 143.5,
-      "return_pct": 1.41,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "expired",
+      "latest_price": 132.5,
+      "return_pct": -6.36,
+      "exit_date": "2026-11-25",
+      "exit_reason": "超過60個交易日未觸發停利/停損",
       "max_tracking_days": 60,
-      "tracking_days": 59
+      "tracking_days": 60,
+      "exit_price": 132.5
     },
     {
       "analysis_date": "2026-08-27",
@@ -68619,13 +68620,14 @@
       "take_profit": 50.45,
       "建議停損": 37.62,
       "第一停利": 50.45,
-      "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 13.68,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "expired",
+      "latest_price": 45.7,
+      "return_pct": 6.9,
+      "exit_date": "2026-11-25",
+      "exit_reason": "超過60個交易日未觸發停利/停損",
       "max_tracking_days": 60,
-      "tracking_days": 59
+      "tracking_days": 60,
+      "exit_price": 45.7
     },
     {
       "analysis_date": "2026-08-27",
@@ -69447,12 +69449,12 @@
       "建議停損": 13.99,
       "第一停利": 18.76,
       "status": "holding",
-      "latest_price": 15.25,
-      "return_pct": -4.09,
+      "latest_price": 14.85,
+      "return_pct": -6.6,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 58
+      "tracking_days": 59
     },
     {
       "analysis_date": "2026-08-28",
@@ -69538,12 +69540,12 @@
       "建議停損": 21.43,
       "第一停利": 28.73,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 4.72,
+      "latest_price": 25.0,
+      "return_pct": 2.67,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 58
+      "tracking_days": 59
     },
     {
       "analysis_date": "2026-08-28",
@@ -70388,12 +70390,12 @@
       "建議停損": 14.04,
       "第一停利": 18.82,
       "status": "holding",
-      "latest_price": 15.25,
-      "return_pct": -4.39,
+      "latest_price": 14.85,
+      "return_pct": -6.9,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 57
+      "tracking_days": 58
     },
     {
       "analysis_date": "2026-08-31",
@@ -70433,12 +70435,12 @@
       "建議停損": 21.87,
       "第一停利": 29.32,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 2.62,
+      "latest_price": 25.0,
+      "return_pct": 0.6,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 57
+      "tracking_days": 58
     },
     {
       "analysis_date": "2026-08-31",
@@ -71145,12 +71147,12 @@
       "建議停損": 654.72,
       "第一停利": 877.92,
       "status": "holding",
-      "latest_price": 694.0,
-      "return_pct": -6.72,
+      "latest_price": 699.0,
+      "return_pct": -6.05,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 56
+      "tracking_days": 57
     },
     {
       "analysis_date": "2026-09-01",
@@ -71282,12 +71284,12 @@
       "建議停損": 13.77,
       "第一停利": 18.47,
       "status": "holding",
-      "latest_price": 15.25,
-      "return_pct": -2.56,
+      "latest_price": 14.85,
+      "return_pct": -5.11,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 56
+      "tracking_days": 57
     },
     {
       "analysis_date": "2026-09-01",
@@ -71396,12 +71398,12 @@
       "建議停損": 37.31,
       "第一停利": 50.03,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.62,
+      "latest_price": 45.7,
+      "return_pct": 7.78,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 56
+      "tracking_days": 57
     },
     {
       "analysis_date": "2026-09-01",
@@ -71464,12 +71466,12 @@
       "建議停損": 22.26,
       "第一停利": 29.85,
       "status": "holding",
-      "latest_price": 25.2,
-      "return_pct": -0.4,
+      "latest_price": 24.4,
+      "return_pct": -3.56,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 56
+      "tracking_days": 57
     },
     {
       "analysis_date": "2026-09-01",
@@ -72199,12 +72201,12 @@
       "建議停損": 14.08,
       "第一停利": 18.88,
       "status": "holding",
-      "latest_price": 15.25,
-      "return_pct": -4.69,
+      "latest_price": 14.85,
+      "return_pct": -7.19,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 55
+      "tracking_days": 56
     },
     {
       "analysis_date": "2026-09-02",
@@ -73256,12 +73258,12 @@
       "建議停損": 37.66,
       "第一停利": 50.5,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 13.55,
+      "latest_price": 45.7,
+      "return_pct": 6.78,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 54
+      "tracking_days": 55
     },
     {
       "analysis_date": "2026-09-03",
@@ -74175,12 +74177,12 @@
       "建議停損": 37.4,
       "第一停利": 50.15,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.35,
+      "latest_price": 45.7,
+      "return_pct": 7.53,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 53
+      "tracking_days": 54
     },
     {
       "analysis_date": "2026-09-04",
@@ -76037,12 +76039,12 @@
       "建議停損": 37.36,
       "第一停利": 50.09,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.49,
+      "latest_price": 45.7,
+      "return_pct": 7.66,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 51
+      "tracking_days": 52
     },
     {
       "analysis_date": "2026-09-08",
@@ -76082,12 +76084,12 @@
       "建議停損": 44.53,
       "第一停利": 59.71,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 8.7,
+      "latest_price": 49.7,
+      "return_pct": -1.78,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 51
+      "tracking_days": 52
     },
     {
       "analysis_date": "2026-09-10",
@@ -76955,12 +76957,12 @@
       "建議停損": 43.91,
       "第一停利": 58.88,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 10.22,
+      "latest_price": 49.7,
+      "return_pct": -0.4,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 49
+      "tracking_days": 50
     },
     {
       "analysis_date": "2026-09-10",
@@ -77851,12 +77853,12 @@
       "建議停損": 45.5,
       "第一停利": 61.01,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 6.38,
+      "latest_price": 49.7,
+      "return_pct": -3.87,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 48
+      "tracking_days": 49
     },
     {
       "analysis_date": "2026-09-11",
@@ -77873,12 +77875,12 @@
       "建議停損": 37.27,
       "第一停利": 49.97,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.76,
+      "latest_price": 45.7,
+      "return_pct": 7.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 48
+      "tracking_days": 49
     },
     {
       "analysis_date": "2026-09-11",
@@ -78838,12 +78840,12 @@
       "建議停損": 46.2,
       "第一停利": 61.95,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 4.76,
+      "latest_price": 49.7,
+      "return_pct": -5.33,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 47
+      "tracking_days": 48
     },
     {
       "analysis_date": "2026-09-15",
@@ -79412,12 +79414,12 @@
       "建議停損": 61.34,
       "第一停利": 82.25,
       "status": "holding",
-      "latest_price": 69.9,
-      "return_pct": 0.29,
+      "latest_price": 65.9,
+      "return_pct": -5.45,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 46
+      "tracking_days": 47
     },
     {
       "analysis_date": "2026-09-15",
@@ -82148,12 +82150,12 @@
       "建議停損": 639.76,
       "第一停利": 857.86,
       "status": "holding",
-      "latest_price": 694.0,
-      "return_pct": -4.54,
+      "latest_price": 699.0,
+      "return_pct": -3.85,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 43
+      "tracking_days": 44
     },
     {
       "analysis_date": "2026-09-18",
@@ -82285,12 +82287,12 @@
       "建議停損": 61.16,
       "第一停利": 82.01,
       "status": "holding",
-      "latest_price": 69.9,
-      "return_pct": 0.58,
+      "latest_price": 65.9,
+      "return_pct": -5.18,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 43
+      "tracking_days": 44
     },
     {
       "analysis_date": "2026-09-18",
@@ -82445,12 +82447,12 @@
       "建議停損": 21.74,
       "第一停利": 29.15,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 3.24,
+      "latest_price": 25.0,
+      "return_pct": 1.21,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 43
+      "tracking_days": 44
     },
     {
       "analysis_date": "2026-09-18",
@@ -83410,12 +83412,12 @@
       "建議停損": 37.4,
       "第一停利": 50.15,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.35,
+      "latest_price": 45.7,
+      "return_pct": 7.53,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 41
+      "tracking_days": 42
     },
     {
       "analysis_date": "2026-09-22",
@@ -86146,12 +86148,12 @@
       "建議停損": 37.71,
       "第一停利": 50.56,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 13.42,
+      "latest_price": 45.7,
+      "return_pct": 6.65,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 37
+      "tracking_days": 38
     },
     {
       "analysis_date": "2026-09-30",
@@ -87088,12 +87090,12 @@
       "建議停損": 37.14,
       "第一停利": 49.8,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 15.17,
+      "latest_price": 45.7,
+      "return_pct": 8.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 36
+      "tracking_days": 37
     },
     {
       "analysis_date": "2026-10-01",
@@ -87984,12 +87986,12 @@
       "建議停損": 37.27,
       "第一停利": 49.97,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.76,
+      "latest_price": 45.7,
+      "return_pct": 7.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 35
+      "tracking_days": 36
     },
     {
       "analysis_date": "2026-10-02",
@@ -89731,12 +89733,12 @@
       "建議停損": 22.04,
       "第一停利": 29.56,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 1.8,
+      "latest_price": 25.0,
+      "return_pct": -0.2,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 31
+      "tracking_days": 32
     },
     {
       "analysis_date": "2026-10-08",
@@ -90765,12 +90767,12 @@
       "建議停損": 22.57,
       "第一停利": 30.27,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.58,
+      "latest_price": 25.0,
+      "return_pct": -2.53,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 30
+      "tracking_days": 31
     },
     {
       "analysis_date": "2026-10-12",
@@ -91684,12 +91686,12 @@
       "建議停損": 22.75,
       "第一停利": 30.5,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.35,
+      "latest_price": 25.0,
+      "return_pct": -3.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 29
+      "tracking_days": 30
     },
     {
       "analysis_date": "2026-10-13",
@@ -92580,12 +92582,12 @@
       "建議停損": 38.46,
       "第一停利": 51.57,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 11.21,
+      "latest_price": 45.7,
+      "return_pct": 4.58,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 26
+      "tracking_days": 27
     },
     {
       "analysis_date": "2026-10-16",
@@ -92625,12 +92627,12 @@
       "建議停損": 18.52,
       "第一停利": 24.84,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 6.89,
+      "latest_price": 22.0,
+      "return_pct": 4.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 26
+      "tracking_days": 27
     },
     {
       "analysis_date": "2026-10-20",
@@ -93498,12 +93500,12 @@
       "建議停損": 37.27,
       "第一停利": 49.97,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 14.76,
+      "latest_price": 45.7,
+      "return_pct": 7.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 24
+      "tracking_days": 25
     },
     {
       "analysis_date": "2026-10-20",
@@ -94463,12 +94465,12 @@
       "建議停損": 23.23,
       "第一停利": 31.15,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -3.41,
+      "latest_price": 25.0,
+      "return_pct": -5.3,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 23
+      "tracking_days": 24
     },
     {
       "analysis_date": "2026-10-22",
@@ -96279,12 +96281,12 @@
       "建議停損": 37.8,
       "第一停利": 50.68,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 13.15,
+      "latest_price": 45.7,
+      "return_pct": 6.4,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 20
+      "tracking_days": 21
     },
     {
       "analysis_date": "2026-10-27",
@@ -97382,12 +97384,12 @@
       "建議停損": 147.41,
       "第一停利": 174.35,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 9.15,
+      "latest_price": 172.5,
+      "return_pct": 8.83,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 18
+      "tracking_days": 19
     },
     {
       "analysis_date": "2026-10-29",
@@ -97427,12 +97429,12 @@
       "建議停損": 147.88,
       "第一停利": 173.8,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 4.11,
+      "latest_price": 163.5,
+      "return_pct": 3.48,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 18
+      "tracking_days": 19
     },
     {
       "analysis_date": "2026-10-29",
@@ -98093,12 +98095,12 @@
       "建議停損": 37.62,
       "第一停利": 50.45,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 13.68,
+      "latest_price": 45.7,
+      "return_pct": 6.9,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 18
+      "tracking_days": 19
     },
     {
       "analysis_date": "2026-10-29",
@@ -98115,12 +98117,12 @@
       "建議停損": 22.57,
       "第一停利": 30.27,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.58,
+      "latest_price": 25.0,
+      "return_pct": -2.53,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 18
+      "tracking_days": 19
     },
     {
       "analysis_date": "2026-10-29",
@@ -98229,12 +98231,12 @@
       "建議停損": 151.12,
       "第一停利": 178.75,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 6.46,
+      "latest_price": 172.5,
+      "return_pct": 6.15,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 16
+      "tracking_days": 17
     },
     {
       "analysis_date": "2026-11-02",
@@ -98320,12 +98322,12 @@
       "建議停損": 149.38,
       "第一停利": 175.45,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 3.13,
+      "latest_price": 163.5,
+      "return_pct": 2.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 16
+      "tracking_days": 17
     },
     {
       "analysis_date": "2026-11-02",
@@ -98963,12 +98965,12 @@
       "建議停損": 37.97,
       "第一停利": 50.92,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 12.63,
+      "latest_price": 45.7,
+      "return_pct": 5.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 16
+      "tracking_days": 17
     },
     {
       "analysis_date": "2026-11-02",
@@ -99054,12 +99056,12 @@
       "建議停損": 22.75,
       "第一停利": 30.5,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.35,
+      "latest_price": 25.0,
+      "return_pct": -3.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 16
+      "tracking_days": 17
     },
     {
       "analysis_date": "2026-11-03",
@@ -99145,12 +99147,12 @@
       "建議停損": 152.99,
       "第一停利": 180.95,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 5.17,
+      "latest_price": 172.5,
+      "return_pct": 4.86,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 15
+      "tracking_days": 16
     },
     {
       "analysis_date": "2026-11-03",
@@ -99190,12 +99192,12 @@
       "建議停損": 150.01,
       "第一停利": 174.9,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 3.46,
+      "latest_price": 163.5,
+      "return_pct": 2.83,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 15
+      "tracking_days": 16
     },
     {
       "analysis_date": "2026-11-03",
@@ -99718,12 +99720,12 @@
       "建議停損": 22.79,
       "第一停利": 30.56,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.54,
+      "latest_price": 25.0,
+      "return_pct": -3.47,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 15
+      "tracking_days": 16
     },
     {
       "analysis_date": "2026-11-03",
@@ -99809,12 +99811,12 @@
       "建議停損": 22.79,
       "第一停利": 30.56,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.54,
+      "latest_price": 25.0,
+      "return_pct": -3.47,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 15
+      "tracking_days": 16
     },
     {
       "analysis_date": "2026-11-03",
@@ -99831,12 +99833,12 @@
       "建議停損": 38.46,
       "第一停利": 51.57,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 11.21,
+      "latest_price": 45.7,
+      "return_pct": 4.58,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 15
+      "tracking_days": 16
     },
     {
       "analysis_date": "2026-11-03",
@@ -99899,12 +99901,12 @@
       "建議停損": 18.22,
       "第一停利": 24.43,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 8.7,
+      "latest_price": 22.0,
+      "return_pct": 6.28,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 15
+      "tracking_days": 16
     },
     {
       "analysis_date": "2026-11-03",
@@ -100036,12 +100038,12 @@
       "建議停損": 153.92,
       "第一停利": 182.05,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 4.53,
+      "latest_price": 172.5,
+      "return_pct": 4.23,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 14
+      "tracking_days": 15
     },
     {
       "analysis_date": "2026-11-04",
@@ -100058,12 +100060,12 @@
       "建議停損": 150.8,
       "第一停利": 177.65,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 1.86,
+      "latest_price": 163.5,
+      "return_pct": 1.24,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 14
+      "tracking_days": 15
     },
     {
       "analysis_date": "2026-11-04",
@@ -100747,12 +100749,12 @@
       "建議停損": 38.5,
       "第一停利": 51.62,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 11.09,
+      "latest_price": 45.7,
+      "return_pct": 4.46,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 14
+      "tracking_days": 15
     },
     {
       "analysis_date": "2026-11-04",
@@ -100792,12 +100794,12 @@
       "建議停損": 18.04,
       "第一停利": 24.19,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 9.76,
+      "latest_price": 22.0,
+      "return_pct": 7.32,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 14
+      "tracking_days": 15
     },
     {
       "analysis_date": "2026-11-04",
@@ -100814,12 +100816,12 @@
       "建議停損": 22.4,
       "第一停利": 30.03,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 0.2,
+      "latest_price": 25.0,
+      "return_pct": -1.77,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 14
+      "tracking_days": 15
     },
     {
       "analysis_date": "2026-11-04",
@@ -100859,12 +100861,12 @@
       "建議停損": 23.98,
       "第一停利": 32.16,
       "status": "holding",
-      "latest_price": 25.2,
-      "return_pct": -7.52,
+      "latest_price": 24.4,
+      "return_pct": -10.46,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 14
+      "tracking_days": 15
     },
     {
       "analysis_date": "2026-11-04",
@@ -100904,12 +100906,12 @@
       "建議停損": 151.58,
       "第一停利": 177.65,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 1.86,
+      "latest_price": 163.5,
+      "return_pct": 1.24,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -100926,12 +100928,12 @@
       "建議停損": 20.13,
       "第一停利": 23.81,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.93,
+      "latest_price": 22.0,
+      "return_pct": 1.62,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -100971,12 +100973,12 @@
       "建議停損": 155.31,
       "第一停利": 183.7,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 3.59,
+      "latest_price": 172.5,
+      "return_pct": 3.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101016,12 +101018,12 @@
       "建議停損": 41.99,
       "第一停利": 49.61,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 7.76,
+      "latest_price": 45.7,
+      "return_pct": 1.33,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101130,12 +101132,12 @@
       "建議停損": 20.13,
       "第一停利": 23.81,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.93,
+      "latest_price": 22.0,
+      "return_pct": 1.62,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101175,12 +101177,12 @@
       "建議停損": 41.99,
       "第一停利": 49.61,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 7.76,
+      "latest_price": 45.7,
+      "return_pct": 1.33,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101496,12 +101498,12 @@
       "建議停損": 22.88,
       "第一停利": 30.68,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.92,
+      "latest_price": 25.0,
+      "return_pct": -3.85,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101541,12 +101543,12 @@
       "建議停損": 19.05,
       "第一停利": 25.55,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.93,
+      "latest_price": 22.0,
+      "return_pct": 1.62,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101563,12 +101565,12 @@
       "建議停損": 39.69,
       "第一停利": 53.22,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 7.76,
+      "latest_price": 45.7,
+      "return_pct": 1.33,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101677,12 +101679,12 @@
       "建議停損": 22.88,
       "第一停利": 30.68,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.92,
+      "latest_price": 25.0,
+      "return_pct": -3.85,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101722,12 +101724,12 @@
       "建議停損": 19.05,
       "第一停利": 25.55,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.93,
+      "latest_price": 22.0,
+      "return_pct": 1.62,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101744,12 +101746,12 @@
       "建議停損": 39.69,
       "第一停利": 53.22,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 7.76,
+      "latest_price": 45.7,
+      "return_pct": 1.33,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 13
+      "tracking_days": 14
     },
     {
       "analysis_date": "2026-11-05",
@@ -101812,12 +101814,12 @@
       "建議停損": 152.46,
       "第一停利": 179.85,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.61,
+      "latest_price": 163.5,
+      "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -101834,12 +101836,12 @@
       "建議停損": 152.06,
       "第一停利": 179.85,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 5.81,
+      "latest_price": 172.5,
+      "return_pct": 5.5,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102408,12 +102410,12 @@
       "建議停損": 18.66,
       "第一停利": 25.02,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 6.13,
+      "latest_price": 22.0,
+      "return_pct": 3.77,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102430,12 +102432,12 @@
       "建議停損": 38.37,
       "第一停利": 51.45,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 11.47,
+      "latest_price": 45.7,
+      "return_pct": 4.82,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102452,12 +102454,12 @@
       "建議停損": 143.88,
       "第一停利": 192.93,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.61,
+      "latest_price": 163.5,
+      "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102474,12 +102476,12 @@
       "建議停損": 22.62,
       "第一停利": 30.33,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.78,
+      "latest_price": 25.0,
+      "return_pct": -2.72,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102565,12 +102567,12 @@
       "建議停損": 18.66,
       "第一停利": 25.02,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 6.13,
+      "latest_price": 22.0,
+      "return_pct": 3.77,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102587,12 +102589,12 @@
       "建議停損": 38.37,
       "第一停利": 51.45,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 11.47,
+      "latest_price": 45.7,
+      "return_pct": 4.82,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102609,12 +102611,12 @@
       "建議停損": 22.62,
       "第一停利": 30.33,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.78,
+      "latest_price": 25.0,
+      "return_pct": -2.72,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-06",
@@ -102700,12 +102702,12 @@
       "建議停損": 23.54,
       "第一停利": 31.56,
       "status": "holding",
-      "latest_price": 25.2,
-      "return_pct": -5.79,
+      "latest_price": 24.4,
+      "return_pct": -8.79,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 12
+      "tracking_days": 13
     },
     {
       "analysis_date": "2026-11-09",
@@ -102722,12 +102724,12 @@
       "建議停損": 20.24,
       "第一停利": 23.93,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.45,
+      "latest_price": 22.0,
+      "return_pct": 1.15,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -102744,12 +102746,12 @@
       "建議停損": 153.08,
       "第一停利": 174.9,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 3.46,
+      "latest_price": 163.5,
+      "return_pct": 2.83,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -102858,12 +102860,12 @@
       "建議停損": 153.45,
       "第一停利": 181.5,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 4.85,
+      "latest_price": 172.5,
+      "return_pct": 4.55,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -102949,12 +102951,12 @@
       "建議停損": 20.24,
       "第一停利": 23.93,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.45,
+      "latest_price": 22.0,
+      "return_pct": 1.15,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103270,12 +103272,12 @@
       "建議停損": 139.92,
       "第一停利": 187.62,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 3.46,
+      "latest_price": 163.5,
+      "return_pct": 2.83,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103315,12 +103317,12 @@
       "建議停損": 653.84,
       "第一停利": 876.74,
       "status": "holding",
-      "latest_price": 694.0,
-      "return_pct": -6.59,
+      "latest_price": 699.0,
+      "return_pct": -5.92,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103360,12 +103362,12 @@
       "建議停損": 19.14,
       "第一停利": 25.66,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.45,
+      "latest_price": 22.0,
+      "return_pct": 1.15,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103382,12 +103384,12 @@
       "建議停損": 38.63,
       "第一停利": 51.8,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 10.71,
+      "latest_price": 45.7,
+      "return_pct": 4.1,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103427,12 +103429,12 @@
       "建議停損": 19.14,
       "第一停利": 25.66,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 3.45,
+      "latest_price": 22.0,
+      "return_pct": 1.15,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103449,12 +103451,12 @@
       "建議停損": 38.63,
       "第一停利": 51.8,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 10.71,
+      "latest_price": 45.7,
+      "return_pct": 4.1,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103494,12 +103496,12 @@
       "建議停損": 22.62,
       "第一停利": 30.33,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.78,
+      "latest_price": 25.0,
+      "return_pct": -2.72,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103585,12 +103587,12 @@
       "建議停損": 23.58,
       "第一停利": 31.62,
       "status": "holding",
-      "latest_price": 25.2,
-      "return_pct": -5.97,
+      "latest_price": 24.4,
+      "return_pct": -8.96,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-09",
@@ -103607,12 +103609,12 @@
       "建議停損": 46.46,
       "第一停利": 62.3,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 4.17,
+      "latest_price": 49.7,
+      "return_pct": -5.87,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 11
+      "tracking_days": 12
     },
     {
       "analysis_date": "2026-11-10",
@@ -103698,12 +103700,12 @@
       "建議停損": 153.71,
       "第一停利": 175.45,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 3.13,
+      "latest_price": 163.5,
+      "return_pct": 2.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -103720,12 +103722,12 @@
       "建議停損": 155.78,
       "第一停利": 184.25,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 3.28,
+      "latest_price": 172.5,
+      "return_pct": 2.99,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -103811,12 +103813,12 @@
       "建議停損": 42.92,
       "第一停利": 50.77,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 5.31,
+      "latest_price": 45.7,
+      "return_pct": -0.98,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -103902,12 +103904,12 @@
       "建議停損": 42.92,
       "第一停利": 50.77,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 5.31,
+      "latest_price": 45.7,
+      "return_pct": -0.98,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -104154,12 +104156,12 @@
       "建議停損": 655.6,
       "第一停利": 879.1,
       "status": "holding",
-      "latest_price": 694.0,
-      "return_pct": -6.85,
+      "latest_price": 699.0,
+      "return_pct": -6.17,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -104360,12 +104362,12 @@
       "建議停損": 40.61,
       "第一停利": 54.46,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 5.31,
+      "latest_price": 45.7,
+      "return_pct": -0.98,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -104382,12 +104384,12 @@
       "建議停損": 22.88,
       "第一停利": 30.68,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -1.92,
+      "latest_price": 25.0,
+      "return_pct": -3.85,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -104404,12 +104406,12 @@
       "建議停損": 20.06,
       "第一停利": 26.9,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -1.32,
+      "latest_price": 22.0,
+      "return_pct": -3.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 10
+      "tracking_days": 11
     },
     {
       "analysis_date": "2026-11-10",
@@ -104471,13 +104473,14 @@
       "take_profit": 32.21,
       "建議停損": 24.02,
       "第一停利": 32.21,
-      "status": "holding",
-      "latest_price": 25.2,
-      "return_pct": -7.69,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 24.4,
+      "return_pct": -12.01,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 60,
-      "tracking_days": 10
+      "tracking_days": 11,
+      "exit_price": 24.02
     },
     {
       "analysis_date": "2026-11-10",
@@ -104632,12 +104635,12 @@
       "建議停損": 155.62,
       "第一停利": 181.5,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": -0.3,
+      "latest_price": 163.5,
+      "return_pct": -0.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105091,12 +105094,12 @@
       "建議停損": 45.41,
       "第一停利": 60.89,
       "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 4.65,
+      "latest_price": 52.5,
+      "return_pct": 1.74,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105159,12 +105162,12 @@
       "建議停損": 42.02,
       "第一停利": 56.34,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 1.78,
+      "latest_price": 45.7,
+      "return_pct": -4.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105181,12 +105184,12 @@
       "建議停損": 20.42,
       "第一停利": 27.38,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -3.02,
+      "latest_price": 22.0,
+      "return_pct": -5.17,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105249,12 +105252,12 @@
       "建議停損": 45.41,
       "第一停利": 60.89,
       "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 4.65,
+      "latest_price": 52.5,
+      "return_pct": 1.74,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105271,12 +105274,12 @@
       "建議停損": 42.02,
       "第一停利": 56.34,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 1.78,
+      "latest_price": 45.7,
+      "return_pct": -4.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105293,12 +105296,12 @@
       "建議停損": 20.42,
       "第一停利": 27.38,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -3.02,
+      "latest_price": 22.0,
+      "return_pct": -5.17,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 7
+      "tracking_days": 8
     },
     {
       "analysis_date": "2026-11-13",
@@ -105522,12 +105525,12 @@
       "建議停損": 156.14,
       "第一停利": 179.85,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.61,
+      "latest_price": 163.5,
+      "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -105613,12 +105616,12 @@
       "建議停損": 157.17,
       "第一停利": 185.9,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 2.37,
+      "latest_price": 172.5,
+      "return_pct": 2.07,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -105957,12 +105960,12 @@
       "建議停損": 23.58,
       "第一停利": 31.62,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -4.85,
+      "latest_price": 25.0,
+      "return_pct": -6.72,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -105979,12 +105982,12 @@
       "建議停損": 19.98,
       "第一停利": 26.79,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -0.88,
+      "latest_price": 22.0,
+      "return_pct": -3.08,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106000,13 +106003,14 @@
       "take_profit": 474.95,
       "建議停損": 354.2,
       "第一停利": 474.95,
-      "status": "holding",
-      "latest_price": 383.0,
-      "return_pct": -4.84,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 345.0,
+      "return_pct": -12.0,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7,
+      "exit_price": 354.2
     },
     {
       "analysis_date": "2026-11-16",
@@ -106046,12 +106050,12 @@
       "建議停損": 45.32,
       "第一停利": 60.77,
       "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 4.85,
+      "latest_price": 52.5,
+      "return_pct": 1.94,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106068,12 +106072,12 @@
       "建議停損": 41.71,
       "第一停利": 55.93,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 2.53,
+      "latest_price": 45.7,
+      "return_pct": -3.59,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106159,12 +106163,12 @@
       "建議停損": 45.32,
       "第一停利": 60.77,
       "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 4.85,
+      "latest_price": 52.5,
+      "return_pct": 1.94,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106181,12 +106185,12 @@
       "建議停損": 23.58,
       "第一停利": 31.62,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -4.85,
+      "latest_price": 25.0,
+      "return_pct": -6.72,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106203,12 +106207,12 @@
       "建議停損": 19.98,
       "第一停利": 26.79,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -0.88,
+      "latest_price": 22.0,
+      "return_pct": -3.08,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106225,12 +106229,12 @@
       "建議停損": 41.71,
       "第一停利": 55.93,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 2.53,
+      "latest_price": 45.7,
+      "return_pct": -3.59,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 6
+      "tracking_days": 7
     },
     {
       "analysis_date": "2026-11-16",
@@ -106385,12 +106389,12 @@
       "建議停損": 157.12,
       "第一停利": 180.95,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.0,
+      "latest_price": 163.5,
+      "return_pct": -0.61,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -106430,12 +106434,12 @@
       "建議停損": 159.5,
       "第一停利": 188.65,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 0.87,
+      "latest_price": 172.5,
+      "return_pct": 0.58,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -106866,12 +106870,12 @@
       "建議停損": 41.18,
       "第一停利": 55.22,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 3.85,
+      "latest_price": 45.7,
+      "return_pct": -2.35,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -106911,12 +106915,12 @@
       "建議停損": 20.15,
       "第一停利": 27.02,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -1.75,
+      "latest_price": 22.0,
+      "return_pct": -3.93,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107002,12 +107006,12 @@
       "建議停損": 144.76,
       "第一停利": 194.11,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.0,
+      "latest_price": 163.5,
+      "return_pct": -0.61,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107024,12 +107028,12 @@
       "建議停損": 22.66,
       "第一停利": 30.38,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.97,
+      "latest_price": 25.0,
+      "return_pct": -2.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107069,12 +107073,12 @@
       "建議停損": 41.18,
       "第一停利": 55.22,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 3.85,
+      "latest_price": 45.7,
+      "return_pct": -2.35,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107091,12 +107095,12 @@
       "建議停損": 20.15,
       "第一停利": 27.02,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": -1.75,
+      "latest_price": 22.0,
+      "return_pct": -3.93,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107136,12 +107140,12 @@
       "建議停損": 22.66,
       "第一停利": 30.38,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": -0.97,
+      "latest_price": 25.0,
+      "return_pct": -2.91,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107158,12 +107162,12 @@
       "建議停損": 46.55,
       "第一停利": 62.42,
       "status": "holding",
-      "latest_price": 52.7,
-      "return_pct": -0.38,
+      "latest_price": 50.4,
+      "return_pct": -4.73,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107203,12 +107207,12 @@
       "建議停損": 46.29,
       "第一停利": 62.07,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 4.56,
+      "latest_price": 49.7,
+      "return_pct": -5.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 4
+      "tracking_days": 5
     },
     {
       "analysis_date": "2026-11-18",
@@ -107271,12 +107275,12 @@
       "建議停損": 157.71,
       "第一停利": 182.6,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": -0.9,
+      "latest_price": 163.5,
+      "return_pct": -1.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107339,12 +107343,12 @@
       "建議停損": 160.43,
       "第一停利": 189.75,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 0.29,
+      "latest_price": 172.5,
+      "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107637,12 +107641,12 @@
       "建議停損": 50.13,
       "第一停利": 59.29,
       "status": "holding",
-      "latest_price": 55.6,
-      "return_pct": 3.15,
+      "latest_price": 51.0,
+      "return_pct": -5.38,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107705,12 +107709,12 @@
       "建議停損": 15.72,
       "第一停利": 18.59,
       "status": "holding",
-      "latest_price": 16.8,
-      "return_pct": -0.59,
+      "latest_price": 16.4,
+      "return_pct": -2.96,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107727,12 +107731,12 @@
       "建議停損": 19.8,
       "第一停利": 26.55,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 0.0,
+      "latest_price": 22.0,
+      "return_pct": -2.22,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107772,12 +107776,12 @@
       "建議停損": 40.83,
       "第一停利": 54.75,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 4.74,
+      "latest_price": 45.7,
+      "return_pct": -1.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107817,12 +107821,12 @@
       "建議停損": 46.9,
       "第一停利": 62.89,
       "status": "holding",
-      "latest_price": 58.9,
-      "return_pct": 10.51,
+      "latest_price": 54.8,
+      "return_pct": 2.81,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107839,12 +107843,12 @@
       "建議停損": 146.08,
       "第一停利": 195.88,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": -0.9,
+      "latest_price": 163.5,
+      "return_pct": -1.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107884,12 +107888,12 @@
       "建議停損": 696.96,
       "第一停利": 934.56,
       "status": "holding",
-      "latest_price": 786.0,
-      "return_pct": -0.76,
+      "latest_price": 775.0,
+      "return_pct": -2.15,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107906,12 +107910,12 @@
       "建議停損": 46.99,
       "第一停利": 63.01,
       "status": "holding",
-      "latest_price": 52.7,
-      "return_pct": -1.31,
+      "latest_price": 50.4,
+      "return_pct": -5.62,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107951,12 +107955,12 @@
       "建議停損": 19.8,
       "第一停利": 26.55,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 0.0,
+      "latest_price": 22.0,
+      "return_pct": -2.22,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -107973,12 +107977,12 @@
       "建議停損": 40.83,
       "第一停利": 54.75,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 4.74,
+      "latest_price": 45.7,
+      "return_pct": -1.51,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -108018,12 +108022,12 @@
       "建議停損": 46.9,
       "第一停利": 62.89,
       "status": "holding",
-      "latest_price": 58.9,
-      "return_pct": 10.51,
+      "latest_price": 54.8,
+      "return_pct": 2.81,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -108063,12 +108067,12 @@
       "建議停損": 46.99,
       "第一停利": 63.01,
       "status": "holding",
-      "latest_price": 52.7,
-      "return_pct": -1.31,
+      "latest_price": 50.4,
+      "return_pct": -5.62,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -108108,12 +108112,12 @@
       "建議停損": 22.13,
       "第一停利": 29.68,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 1.39,
+      "latest_price": 25.0,
+      "return_pct": -0.6,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -108130,12 +108134,12 @@
       "建議停損": 46.99,
       "第一停利": 63.01,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 3.0,
+      "latest_price": 49.7,
+      "return_pct": -6.93,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-19",
@@ -108152,12 +108156,12 @@
       "建議停損": 50.6,
       "第一停利": 67.85,
       "status": "holding",
-      "latest_price": 58.4,
-      "return_pct": 1.57,
+      "latest_price": 58.0,
+      "return_pct": 0.87,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 3
+      "tracking_days": 4
     },
     {
       "analysis_date": "2026-11-24",
@@ -108174,12 +108178,12 @@
       "建議停損": 1491.56,
       "第一停利": 1727.0,
       "status": "holding",
-      "latest_price": 1570.0,
-      "return_pct": 0.0,
+      "latest_price": 1630.0,
+      "return_pct": 3.82,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108196,12 +108200,12 @@
       "建議停損": 163.37,
       "第一停利": 190.3,
       "status": "holding",
-      "latest_price": 173.0,
-      "return_pct": 0.0,
+      "latest_price": 172.5,
+      "return_pct": -0.29,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108218,12 +108222,12 @@
       "建議停損": 158.56,
       "第一停利": 180.95,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.0,
+      "latest_price": 163.5,
+      "return_pct": -0.61,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108240,12 +108244,12 @@
       "建議停損": 21.34,
       "第一停利": 24.75,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 0.0,
+      "latest_price": 22.0,
+      "return_pct": -2.22,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108262,12 +108266,12 @@
       "建議停損": 232.5,
       "第一停利": 275.0,
       "status": "holding",
-      "latest_price": 250.0,
-      "return_pct": 0.0,
+      "latest_price": 235.5,
+      "return_pct": -5.8,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108284,12 +108288,12 @@
       "建議停損": 178.56,
       "第一停利": 211.2,
       "status": "holding",
-      "latest_price": 192.0,
-      "return_pct": 0.0,
+      "latest_price": 193.0,
+      "return_pct": 0.52,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108305,13 +108309,14 @@
       "take_profit": 177.1,
       "建議停損": 156.11,
       "第一停利": 177.1,
-      "status": "holding",
-      "latest_price": 161.0,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 148.5,
+      "return_pct": -3.04,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 156.11
     },
     {
       "analysis_date": "2026-11-24",
@@ -108327,13 +108332,14 @@
       "take_profit": 106.81,
       "建議停損": 90.3,
       "第一停利": 106.81,
-      "status": "holding",
-      "latest_price": 97.1,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 87.4,
+      "return_pct": -7.0,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 90.3
     },
     {
       "analysis_date": "2026-11-24",
@@ -108349,13 +108355,14 @@
       "take_profit": 44.38,
       "建議停損": 37.53,
       "第一停利": 44.38,
-      "status": "holding",
-      "latest_price": 40.35,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 36.35,
+      "return_pct": -6.99,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 37.53
     },
     {
       "analysis_date": "2026-11-24",
@@ -108371,13 +108378,14 @@
       "take_profit": 535.15,
       "建議停損": 470.99,
       "第一停利": 535.15,
-      "status": "holding",
-      "latest_price": 486.5,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 452.0,
+      "return_pct": -3.19,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 470.99
     },
     {
       "analysis_date": "2026-11-24",
@@ -108394,12 +108402,12 @@
       "建議停損": 21.34,
       "第一停利": 24.75,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 0.0,
+      "latest_price": 22.0,
+      "return_pct": -2.22,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108415,13 +108423,14 @@
       "take_profit": 44.38,
       "建議停損": 37.53,
       "第一停利": 44.38,
-      "status": "holding",
-      "latest_price": 40.35,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 36.35,
+      "return_pct": -6.99,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 37.53
     },
     {
       "analysis_date": "2026-11-24",
@@ -108437,13 +108446,14 @@
       "take_profit": 53.46,
       "建議停損": 45.2,
       "第一停利": 53.46,
-      "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 45.7,
+      "return_pct": -7.0,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 45.2
     },
     {
       "analysis_date": "2026-11-24",
@@ -108459,13 +108469,14 @@
       "take_profit": 64.79,
       "建議停損": 54.78,
       "第一停利": 64.79,
-      "status": "holding",
-      "latest_price": 58.9,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 54.8,
+      "return_pct": -6.99,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 54.78
     },
     {
       "analysis_date": "2026-11-24",
@@ -108481,13 +108492,14 @@
       "take_profit": 29.48,
       "建議停損": 24.92,
       "第一停利": 29.48,
-      "status": "holding",
-      "latest_price": 26.8,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 25.3,
+      "return_pct": -7.01,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 24.92
     },
     {
       "analysis_date": "2026-11-24",
@@ -108503,13 +108515,14 @@
       "take_profit": 60.5,
       "建議停損": 52.61,
       "第一停利": 60.5,
-      "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 49.7,
+      "return_pct": -4.35,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 52.61
     },
     {
       "analysis_date": "2026-11-24",
@@ -108526,12 +108539,12 @@
       "建議停損": 39.15,
       "第一停利": 46.31,
       "status": "holding",
-      "latest_price": 42.1,
-      "return_pct": 0.0,
+      "latest_price": 40.65,
+      "return_pct": -3.44,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108547,13 +108560,14 @@
       "take_profit": 59.4,
       "建議停損": 50.22,
       "第一停利": 59.4,
-      "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 52.5,
+      "return_pct": -7.0,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 50.22
     },
     {
       "analysis_date": "2026-11-24",
@@ -108569,13 +108583,14 @@
       "take_profit": 24.53,
       "建議停損": 21.77,
       "第一停利": 24.53,
-      "status": "holding",
-      "latest_price": 22.3,
-      "return_pct": 0.0,
-      "exit_date": null,
-      "exit_reason": null,
+      "status": "loss",
+      "latest_price": 20.1,
+      "return_pct": -2.38,
+      "exit_date": "2026-11-25",
+      "exit_reason": "觸發停損",
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1,
+      "exit_price": 21.77
     },
     {
       "analysis_date": "2026-11-24",
@@ -108592,12 +108607,12 @@
       "建議停損": 52.36,
       "第一停利": 61.93,
       "status": "holding",
-      "latest_price": 56.3,
-      "return_pct": 0.0,
+      "latest_price": 55.8,
+      "return_pct": -0.89,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 20,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108614,12 +108629,12 @@
       "建議停損": 47.52,
       "第一停利": 63.72,
       "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 0.0,
+      "latest_price": 52.5,
+      "return_pct": -2.78,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108636,12 +108651,12 @@
       "建議停損": 337.04,
       "第一停利": 451.94,
       "status": "holding",
-      "latest_price": 383.0,
-      "return_pct": 0.0,
+      "latest_price": 345.0,
+      "return_pct": -9.92,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108658,12 +108673,12 @@
       "建議停損": 159.28,
       "第一停利": 213.58,
       "status": "holding",
-      "latest_price": 181.0,
-      "return_pct": 0.0,
+      "latest_price": 176.5,
+      "return_pct": -2.49,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108680,12 +108695,12 @@
       "建議停損": 168.96,
       "第一停利": 226.56,
       "status": "holding",
-      "latest_price": 192.0,
-      "return_pct": 0.0,
+      "latest_price": 193.0,
+      "return_pct": 0.52,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108702,12 +108717,12 @@
       "建議停損": 19.8,
       "第一停利": 26.55,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 0.0,
+      "latest_price": 22.0,
+      "return_pct": -2.22,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108724,12 +108739,12 @@
       "建議停損": 42.77,
       "第一停利": 57.35,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 0.0,
+      "latest_price": 45.7,
+      "return_pct": -5.97,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108746,12 +108761,12 @@
       "建議停損": 144.76,
       "第一停利": 194.11,
       "status": "holding",
-      "latest_price": 164.5,
-      "return_pct": 0.0,
+      "latest_price": 163.5,
+      "return_pct": -0.61,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108768,12 +108783,12 @@
       "建議停損": 22.44,
       "第一停利": 30.09,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 0.0,
+      "latest_price": 25.0,
+      "return_pct": -1.96,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108790,12 +108805,12 @@
       "建議停損": 51.83,
       "第一停利": 69.5,
       "status": "holding",
-      "latest_price": 58.9,
-      "return_pct": 0.0,
+      "latest_price": 54.8,
+      "return_pct": -6.96,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108812,12 +108827,12 @@
       "建議停損": 1218.8,
       "第一停利": 1634.3,
       "status": "holding",
-      "latest_price": 1385.0,
-      "return_pct": 0.0,
+      "latest_price": 1255.0,
+      "return_pct": -9.39,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108834,12 +108849,12 @@
       "建議停損": 47.52,
       "第一停利": 63.72,
       "status": "holding",
-      "latest_price": 54.0,
-      "return_pct": 0.0,
+      "latest_price": 52.5,
+      "return_pct": -2.78,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108856,12 +108871,12 @@
       "建議停損": 19.8,
       "第一停利": 26.55,
       "status": "holding",
-      "latest_price": 22.5,
-      "return_pct": 0.0,
+      "latest_price": 22.0,
+      "return_pct": -2.22,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108878,12 +108893,12 @@
       "建議停損": 42.77,
       "第一停利": 57.35,
       "status": "holding",
-      "latest_price": 48.6,
-      "return_pct": 0.0,
+      "latest_price": 45.7,
+      "return_pct": -5.97,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108900,12 +108915,12 @@
       "建議停損": 22.44,
       "第一停利": 30.09,
       "status": "holding",
-      "latest_price": 25.5,
-      "return_pct": 0.0,
+      "latest_price": 25.0,
+      "return_pct": -1.96,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108922,12 +108937,12 @@
       "建議停損": 51.83,
       "第一停利": 69.5,
       "status": "holding",
-      "latest_price": 58.9,
-      "return_pct": 0.0,
+      "latest_price": 54.8,
+      "return_pct": -6.96,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108944,12 +108959,12 @@
       "建議停損": 46.38,
       "第一停利": 62.19,
       "status": "holding",
-      "latest_price": 52.7,
-      "return_pct": 0.0,
+      "latest_price": 50.4,
+      "return_pct": -4.36,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108966,12 +108981,12 @@
       "建議停損": 25.7,
       "第一停利": 34.46,
       "status": "holding",
-      "latest_price": 29.2,
-      "return_pct": 0.0,
+      "latest_price": 28.4,
+      "return_pct": -2.74,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -108988,12 +109003,12 @@
       "建議停損": 10.3,
       "第一停利": 13.81,
       "status": "holding",
-      "latest_price": 11.7,
-      "return_pct": 0.0,
+      "latest_price": 10.95,
+      "return_pct": -6.41,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -109010,12 +109025,12 @@
       "建議停損": 48.4,
       "第一停利": 64.9,
       "status": "holding",
-      "latest_price": 55.0,
-      "return_pct": 0.0,
+      "latest_price": 49.7,
+      "return_pct": -9.64,
       "exit_date": null,
       "exit_reason": null,
       "max_tracking_days": 60,
-      "tracking_days": 0
+      "tracking_days": 1
     },
     {
       "analysis_date": "2026-11-24",
@@ -109032,7 +109047,887 @@
       "建議停損": 29.26,
       "第一停利": 39.23,
       "status": "holding",
-      "latest_price": 33.25,
+      "latest_price": 30.8,
+      "return_pct": -7.37,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 1
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "3665",
+      "股票名稱": "貿聯-KY",
+      "等級": "S級",
+      "總分": 187.0,
+      "entry_price": 1630.0,
+      "stop_loss": 1515.9,
+      "take_profit": 1793.0,
+      "建議停損": 1515.9,
+      "第一停利": 1793.0,
+      "status": "holding",
+      "latest_price": 1630.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "7788",
+      "股票名稱": "松川精密",
+      "等級": "A級",
+      "總分": 176.0,
+      "entry_price": 230.5,
+      "stop_loss": 214.37,
+      "take_profit": 253.55,
+      "建議停損": 214.37,
+      "第一停利": 253.55,
+      "status": "holding",
+      "latest_price": 230.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "6199",
+      "股票名稱": "天品",
+      "等級": "A級",
+      "總分": 171.0,
+      "entry_price": 172.5,
+      "stop_loss": 164.17,
+      "take_profit": 189.75,
+      "建議停損": 164.17,
+      "第一停利": 189.75,
+      "status": "holding",
+      "latest_price": 172.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2412",
+      "股票名稱": "中華電",
+      "等級": "A級",
+      "總分": 168.0,
+      "entry_price": 163.5,
+      "stop_loss": 158.91,
+      "take_profit": 179.85,
+      "建議停損": 158.91,
+      "第一停利": 179.85,
+      "status": "holding",
+      "latest_price": 163.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2345",
+      "股票名稱": "智邦",
+      "等級": "A級",
+      "總分": 150.0,
+      "entry_price": 1475.0,
+      "stop_loss": 1431.29,
+      "take_profit": 1622.5,
+      "建議停損": 1431.29,
+      "第一停利": 1622.5,
+      "status": "holding",
+      "latest_price": 1475.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2308",
+      "股票名稱": "台達電",
+      "等級": "A級",
+      "總分": 145.0,
+      "entry_price": 1055.0,
+      "stop_loss": 981.15,
+      "take_profit": 1160.5,
+      "建議停損": 981.15,
+      "第一停利": 1160.5,
+      "status": "holding",
+      "latest_price": 1055.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2355",
+      "股票名稱": "敬鵬",
+      "等級": "A級",
+      "總分": 144.0,
+      "entry_price": 54.8,
+      "stop_loss": 52.78,
+      "take_profit": 60.28,
+      "建議停損": 52.78,
+      "第一停利": 60.28,
+      "status": "holding",
+      "latest_price": 54.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2597",
+      "股票名稱": "潤弘",
+      "等級": "A級",
+      "總分": 143.0,
+      "entry_price": 193.0,
+      "stop_loss": 179.49,
+      "take_profit": 212.3,
+      "建議停損": 179.49,
+      "第一停利": 212.3,
+      "status": "holding",
+      "latest_price": 193.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "6690",
+      "股票名稱": "安碁資訊",
+      "等級": "A級",
+      "總分": 143.0,
+      "entry_price": 200.0,
+      "stop_loss": 189.65,
+      "take_profit": 220.0,
+      "建議停損": 189.65,
+      "第一停利": 220.0,
+      "status": "holding",
+      "latest_price": 200.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "原本TOP10",
+      "股票代號": "2890",
+      "股票名稱": "永豐金",
+      "等級": "A級",
+      "總分": 142.0,
+      "entry_price": 36.35,
+      "stop_loss": 33.81,
+      "take_profit": 39.98,
+      "建議停損": 33.81,
+      "第一停利": 39.98,
+      "status": "holding",
+      "latest_price": 36.35,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2355",
+      "股票名稱": "敬鵬",
+      "等級": "A級",
+      "總分": 144.0,
+      "entry_price": 54.8,
+      "stop_loss": 52.78,
+      "take_profit": 60.28,
+      "建議停損": 52.78,
+      "第一停利": 60.28,
+      "status": "holding",
+      "latest_price": 54.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2890",
+      "股票名稱": "永豐金",
+      "等級": "A級",
+      "總分": 142.0,
+      "entry_price": 36.35,
+      "stop_loss": 33.81,
+      "take_profit": 39.98,
+      "建議停損": 33.81,
+      "第一停利": 39.98,
+      "status": "holding",
+      "latest_price": 36.35,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2610",
+      "股票名稱": "華航",
+      "等級": "A級",
+      "總分": 138.0,
+      "entry_price": 22.0,
+      "stop_loss": 21.43,
+      "take_profit": 24.2,
+      "建議停損": 21.43,
+      "第一停利": 24.2,
+      "status": "holding",
+      "latest_price": 22.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2801",
+      "股票名稱": "彰銀",
+      "等級": "A級",
+      "總分": 137.0,
+      "entry_price": 25.3,
+      "stop_loss": 23.53,
+      "take_profit": 27.83,
+      "建議停損": 23.53,
+      "第一停利": 27.83,
+      "status": "holding",
+      "latest_price": 25.3,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2834",
+      "股票名稱": "臺企銀",
+      "等級": "A級",
+      "總分": 123.0,
+      "entry_price": 16.4,
+      "stop_loss": 15.25,
+      "take_profit": 18.04,
+      "建議停損": 15.25,
+      "第一停利": 18.04,
+      "status": "holding",
+      "latest_price": 16.4,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "9933",
+      "股票名稱": "中鼎",
+      "等級": "A級",
+      "總分": 121.0,
+      "entry_price": 52.5,
+      "stop_loss": 49.11,
+      "take_profit": 57.75,
+      "建議停損": 49.11,
+      "第一停利": 57.75,
+      "status": "holding",
+      "latest_price": 52.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "6614",
+      "股票名稱": "資拓宏宇",
+      "等級": "A級",
+      "總分": 120.0,
+      "entry_price": 46.8,
+      "stop_loss": 43.52,
+      "take_profit": 51.48,
+      "建議停損": 43.52,
+      "第一停利": 51.48,
+      "status": "holding",
+      "latest_price": 46.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2609",
+      "股票名稱": "陽明",
+      "等級": "A級",
+      "總分": 115.0,
+      "entry_price": 55.8,
+      "stop_loss": 51.89,
+      "take_profit": 61.38,
+      "建議停損": 51.89,
+      "第一停利": 61.38,
+      "status": "holding",
+      "latest_price": 55.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2883",
+      "股票名稱": "凱基金",
+      "等級": "A級",
+      "總分": 112.0,
+      "entry_price": 30.05,
+      "stop_loss": 27.95,
+      "take_profit": 33.05,
+      "建議停損": 27.95,
+      "第一停利": 33.05,
+      "status": "holding",
+      "latest_price": 30.05,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "短線（強勢突破）",
+      "source": "低價股TOP10",
+      "股票代號": "2886",
+      "股票名稱": "兆豐金",
+      "等級": "A級",
+      "總分": 111.0,
+      "entry_price": 49.7,
+      "stop_loss": 46.22,
+      "take_profit": 54.67,
+      "建議停損": 46.22,
+      "第一停利": 54.67,
+      "status": "holding",
+      "latest_price": 49.7,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 20,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "9933",
+      "股票名稱": "中鼎",
+      "等級": "S級",
+      "總分": 194.0,
+      "entry_price": 52.5,
+      "stop_loss": 46.2,
+      "take_profit": 61.95,
+      "建議停損": 46.2,
+      "第一停利": 61.95,
+      "status": "holding",
+      "latest_price": 52.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "6140",
+      "股票名稱": "訊達",
+      "等級": "A級",
+      "總分": 158.0,
+      "entry_price": 32.7,
+      "stop_loss": 28.78,
+      "take_profit": 38.59,
+      "建議停損": 28.78,
+      "第一停利": 38.59,
+      "status": "holding",
+      "latest_price": 32.7,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2597",
+      "股票名稱": "潤弘",
+      "等級": "A級",
+      "總分": 157.0,
+      "entry_price": 193.0,
+      "stop_loss": 169.84,
+      "take_profit": 227.74,
+      "建議停損": 169.84,
+      "第一停利": 227.74,
+      "status": "holding",
+      "latest_price": 193.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2355",
+      "股票名稱": "敬鵬",
+      "等級": "A級",
+      "總分": 156.0,
+      "entry_price": 54.8,
+      "stop_loss": 48.22,
+      "take_profit": 64.66,
+      "建議停損": 48.22,
+      "第一停利": 64.66,
+      "status": "holding",
+      "latest_price": 54.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2618",
+      "股票名稱": "長榮航",
+      "等級": "A級",
+      "總分": 154.0,
+      "entry_price": 45.7,
+      "stop_loss": 40.22,
+      "take_profit": 53.93,
+      "建議停損": 40.22,
+      "第一停利": 53.93,
+      "status": "holding",
+      "latest_price": 45.7,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2412",
+      "股票名稱": "中華電",
+      "等級": "A級",
+      "總分": 152.0,
+      "entry_price": 163.5,
+      "stop_loss": 143.88,
+      "take_profit": 192.93,
+      "建議停損": 143.88,
+      "第一停利": 192.93,
+      "status": "holding",
+      "latest_price": 163.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "3665",
+      "股票名稱": "貿聯-KY",
+      "等級": "A級",
+      "總分": 151.0,
+      "entry_price": 1630.0,
+      "stop_loss": 1434.4,
+      "take_profit": 1923.4,
+      "建議停損": 1434.4,
+      "第一停利": 1923.4,
+      "status": "holding",
+      "latest_price": 1630.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2610",
+      "股票名稱": "華航",
+      "等級": "A級",
+      "總分": 149.0,
+      "entry_price": 22.0,
+      "stop_loss": 19.36,
+      "take_profit": 25.96,
+      "建議停損": 19.36,
+      "第一停利": 25.96,
+      "status": "holding",
+      "latest_price": 22.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2466",
+      "股票名稱": "冠西電",
+      "等級": "A級",
+      "總分": 142.0,
+      "entry_price": 345.0,
+      "stop_loss": 303.6,
+      "take_profit": 407.1,
+      "建議停損": 303.6,
+      "第一停利": 407.1,
+      "status": "holding",
+      "latest_price": 345.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "原本TOP10",
+      "股票代號": "2308",
+      "股票名稱": "台達電",
+      "等級": "A級",
+      "總分": 139.0,
+      "entry_price": 1055.0,
+      "stop_loss": 928.4,
+      "take_profit": 1244.9,
+      "建議停損": 928.4,
+      "第一停利": 1244.9,
+      "status": "holding",
+      "latest_price": 1055.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "9933",
+      "股票名稱": "中鼎",
+      "等級": "S級",
+      "總分": 194.0,
+      "entry_price": 52.5,
+      "stop_loss": 46.2,
+      "take_profit": 61.95,
+      "建議停損": 46.2,
+      "第一停利": 61.95,
+      "status": "holding",
+      "latest_price": 52.5,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "6140",
+      "股票名稱": "訊達",
+      "等級": "A級",
+      "總分": 158.0,
+      "entry_price": 32.7,
+      "stop_loss": 28.78,
+      "take_profit": 38.59,
+      "建議停損": 28.78,
+      "第一停利": 38.59,
+      "status": "holding",
+      "latest_price": 32.7,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "2355",
+      "股票名稱": "敬鵬",
+      "等級": "A級",
+      "總分": 156.0,
+      "entry_price": 54.8,
+      "stop_loss": 48.22,
+      "take_profit": 64.66,
+      "建議停損": 48.22,
+      "第一停利": 64.66,
+      "status": "holding",
+      "latest_price": 54.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "2618",
+      "股票名稱": "長榮航",
+      "等級": "A級",
+      "總分": 154.0,
+      "entry_price": 45.7,
+      "stop_loss": 40.22,
+      "take_profit": 53.93,
+      "建議停損": 40.22,
+      "第一停利": 53.93,
+      "status": "holding",
+      "latest_price": 45.7,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "2610",
+      "股票名稱": "華航",
+      "等級": "A級",
+      "總分": 149.0,
+      "entry_price": 22.0,
+      "stop_loss": 19.36,
+      "take_profit": 25.96,
+      "建議停損": 19.36,
+      "第一停利": 25.96,
+      "status": "holding",
+      "latest_price": 22.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "6209",
+      "股票名稱": "今國光",
+      "等級": "A級",
+      "總分": 123.0,
+      "entry_price": 56.8,
+      "stop_loss": 49.98,
+      "take_profit": 67.02,
+      "建議停損": 49.98,
+      "第一停利": 67.02,
+      "status": "holding",
+      "latest_price": 56.8,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "6148",
+      "股票名稱": "驊宏資",
+      "等級": "A級",
+      "總分": 119.0,
+      "entry_price": 49.25,
+      "stop_loss": 43.34,
+      "take_profit": 58.11,
+      "建議停損": 43.34,
+      "第一停利": 58.11,
+      "status": "holding",
+      "latest_price": 49.25,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "9904",
+      "股票名稱": "寶成",
+      "等級": "A級",
+      "總分": 112.0,
+      "entry_price": 25.0,
+      "stop_loss": 22.0,
+      "take_profit": 29.5,
+      "建議停損": 22.0,
+      "第一停利": 29.5,
+      "status": "holding",
+      "latest_price": 25.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "3706",
+      "股票名稱": "神達",
+      "等級": "A級",
+      "總分": 106.0,
+      "entry_price": 58.0,
+      "stop_loss": 51.04,
+      "take_profit": 68.44,
+      "建議停損": 51.04,
+      "第一停利": 68.44,
+      "status": "holding",
+      "latest_price": 58.0,
+      "return_pct": 0.0,
+      "exit_date": null,
+      "exit_reason": null,
+      "max_tracking_days": 60,
+      "tracking_days": 0
+    },
+    {
+      "analysis_date": "2026-11-25",
+      "analysis_time": "2026-11-25 19:28:00",
+      "strategy_mode": "中線（趨勢穩定）",
+      "source": "低價股TOP10",
+      "股票代號": "5876",
+      "股票名稱": "上海商銀",
+      "等級": "A級",
+      "總分": 103.0,
+      "entry_price": 50.4,
+      "stop_loss": 44.35,
+      "take_profit": 59.47,
+      "建議停損": 44.35,
+      "第一停利": 59.47,
+      "status": "holding",
+      "latest_price": 50.4,
       "return_pct": 0.0,
       "exit_date": null,
       "exit_reason": null,
@@ -109040,5 +109935,5 @@
       "tracking_days": 0
     }
   ],
-  "last_updated": "2026-11-24 15:12:27"
+  "last_updated": "2026-11-25 19:29:20"
 }
